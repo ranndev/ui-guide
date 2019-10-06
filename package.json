@@ -1,0 +1,50 @@
+{
+  "name": "ui-guide",
+  "version": "0.1.0",
+  "description": "Your UI guide helper for your application",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/ui-guide.js",
+  "typings": "./dist/esm/ui-guide.d.ts",
+  "scripts": {
+    "build": "gulp build",
+    "watch": "gulp watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rannie-peralta/ui-guide.git"
+  },
+  "keywords": [
+    "ui",
+    "guide",
+    "intro",
+    "introduction"
+  ],
+  "author": "Rannie Peralta",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/rannie-peralta/ui-guide/issues"
+  },
+  "homepage": "https://github.com/rannie-peralta/ui-guide#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-clean": "^0.4.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "node-sass": "^4.12.0",
+    "popper.js": "^1.15.0",
+    "prettier": "^1.18.2",
+    "rollup": "^1.23.1",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript2": "^0.24.3",
+    "tslint": "^5.20.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-config-standard": "^8.0.1",
+    "typescript": "^3.6.3"
+  },
+  "peerDependencies": {
+    "popper.js": "^1.15.0"
+  }
+}

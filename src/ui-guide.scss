@@ -1,0 +1,49 @@
+$class-prefix: 'uig';
+$classes: (
+  'backdrop': 'peripherals-backdrop',
+  'box': 'peripherals-box',
+  'clickable': 'clickable',
+  'highlighted': 'highlighted',
+  'highlighting': 'highlighting',
+  'popup': 'peripherals-popup',
+);
+
+@function classname($key) {
+  @return $class-prefix + '-' + map-get($classes, $key);
+}
+
+.#{classname('backdrop')} {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+body.#{classname('highlighting')} * {
+  pointer-events: none !important;
+}
+
+body.#{classname('highlighting')} {
+  .#{classname('backdrop')},
+  .#{classname('popup')},
+  .#{classname('clickable')} {
+    pointer-events: all !important;
+
+    * {
+      pointer-events: all !important;
+    }
+  }
+}
+
+.#{classname('box')} {
+  position: absolute;
+  display: inline-block;
+  will-change: left, top, width, height;
+}
+
+.#{classname('highlighted')} {
+  position: relative;
+  z-index: 1001;
+}
