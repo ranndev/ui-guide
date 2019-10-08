@@ -32,20 +32,20 @@ export default class UIGuide {
   };
 
   public static highlight(opts: IHighlightOptions | Element | string) {
-    UIGuide.unhighlight();
+    this.unhighlight();
 
     const options: IHighlightOptions =
       opts instanceof Element || typeof opts === 'string'
         ? { element: opts }
         : opts;
 
-    UIGuide.highlighting = queryElement(UIGuide.defaults, options);
+    this.highlighting = queryElement(this.defaults, options);
 
     const events = options.events || {};
 
-    return UIGuide.highlighting.promise
+    return this.highlighting.promise
       .then((element) => {
-        UIGuide.element = element;
+        this.element = element;
 
         const emitElementQueried =
           events.onElementQueried === undefined
@@ -54,59 +54,59 @@ export default class UIGuide {
         return emitElementQueried(element);
       })
       .then(() => {
-        return UIGuide.defaults.events.onElementQueried(UIGuide.element!);
+        return this.defaults.events.onElementQueried(this.element!);
       })
       .then(() => {
         document.body.classList.add(classname('highlighting'));
-        UIGuide.element!.classList.add(classname('highlighted'));
+        this.element!.classList.add(classname('highlighted'));
 
         const clickable =
           options.clickable === undefined
-            ? UIGuide.defaults.highlightOptions.clickable
+            ? this.defaults.highlightOptions.clickable
             : options.clickable;
 
         if (clickable) {
-          UIGuide.element!.classList.add(classname('clickable'));
+          this.element!.classList.add(classname('clickable'));
         }
 
         const autofocus =
           options.autofocus === undefined
-            ? UIGuide.defaults.highlightOptions.clickable
+            ? this.defaults.highlightOptions.clickable
             : options.autofocus;
 
         if (autofocus) {
-          UIGuide.element!.focus();
+          this.element!.focus();
         }
 
-        if (!UIGuide.peripherals.backdrop) {
-          UIGuide.peripherals.backdrop = document.createElement('div');
-          UIGuide.peripherals.backdrop.classList.add(classname('backdrop'));
+        if (!this.peripherals.backdrop) {
+          this.peripherals.backdrop = document.createElement('div');
+          this.peripherals.backdrop.classList.add(classname('backdrop'));
         }
 
-        if (!UIGuide.peripherals.box) {
-          UIGuide.peripherals.box = document.createElement('div');
-          UIGuide.peripherals.box.classList.add(classname('box'));
-          UIGuide.peripherals.backdrop.append(UIGuide.peripherals.box);
+        if (!this.peripherals.box) {
+          this.peripherals.box = document.createElement('div');
+          this.peripherals.box.classList.add(classname('box'));
+          this.peripherals.backdrop.append(this.peripherals.box);
         }
 
         const popup =
           options.popup === undefined
-            ? UIGuide.defaults.highlightOptions.popup
+            ? this.defaults.highlightOptions.popup
             : options.popup;
 
         if (popup) {
-          UIGuide.peripherals.popup = document.createElement('div');
-          UIGuide.peripherals.popup.classList.add(classname('popup'));
-          document.body.append(UIGuide.peripherals.popup);
-          UIGuide.popper = new Popper(
-            UIGuide.element!,
-            UIGuide.peripherals.popup,
+          this.peripherals.popup = document.createElement('div');
+          this.peripherals.popup.classList.add(classname('popup'));
+          document.body.append(this.peripherals.popup);
+          this.popper = new Popper(
+            this.element!,
+            this.peripherals.popup,
             typeof popup === 'boolean' ? undefined : popup,
           );
         }
 
-        (UIGuide.element!.offsetParent || document.body).append(
-          UIGuide.peripherals.backdrop,
+        (this.element!.offsetParent || document.body).append(
+          this.peripherals.backdrop,
         );
 
         const emitPeripheralsReady =
@@ -114,27 +114,32 @@ export default class UIGuide {
             ? noop
             : events.onPerepheralsReady;
 
-        return emitPeripheralsReady(UIGuide.peripherals, UIGuide.element!);
-      })
-      .then(() => {
-        return UIGuide.defaults.events.onPerepheralsReady(
-          UIGuide.peripherals,
-          UIGuide.element!,
+        return emitPeripheralsReady(
+          this.peripherals as Pick<IPeripherals, 'popup'> &
+            Required<Pick<IPeripherals, 'backdrop' | 'box'>>,
+          this.element!,
         );
       })
       .then(() => {
-        UIGuide.udpdatePeripheralsUntilUnhighlight();
+        return this.defaults.events.onPerepheralsReady(
+          this.peripherals as Pick<IPeripherals, 'popup'> &
+            Required<Pick<IPeripherals, 'backdrop' | 'box'>>,
+          this.element!,
+        );
+      })
+      .then(() => {
+        this.udpdatePeripheralsUntilUnhighlight();
       })
       .then(() => {
         return {
-          element: UIGuide.element!,
+          element: this.element!,
           unhighlight: () => {
-            UIGuide.unhighlight();
+            this.unhighlight();
           },
         };
       })
       .finally(() => {
-        delete UIGuide.highlighting;
+        delete this.highlighting;
       });
   }
 
@@ -144,63 +149,62 @@ export default class UIGuide {
   public static unhighlight() {
     document.body.classList.remove(classname('highlighting'));
 
-    if (UIGuide.element) {
-      UIGuide.element.classList.remove(classname('highlighted'));
-      UIGuide.element.classList.remove(classname('clickable'));
+    if (this.element) {
+      this.element.classList.remove(classname('highlighted'));
+      this.element.classList.remove(classname('clickable'));
     }
 
-    if (UIGuide.highlighting) {
-      UIGuide.highlighting.reject('Highlight operation terminated.');
+    if (this.highlighting) {
+      this.highlighting.reject('Highlight operation terminated.');
     }
 
-    if (UIGuide.popper) {
-      UIGuide.popper.destroy();
-      delete UIGuide.popper;
+    if (this.popper) {
+      this.popper.destroy();
+      delete this.popper;
     }
 
-    if (UIGuide.peripherals.popup) {
-      UIGuide.peripherals.popup.remove();
+    if (this.peripherals.popup) {
+      this.peripherals.popup.remove();
     }
 
-    if (UIGuide.peripherals.backdrop) {
-      UIGuide.peripherals.backdrop.remove();
+    if (this.peripherals.backdrop) {
+      this.peripherals.backdrop.remove();
     }
 
-    if (UIGuide.peripherals.box) {
-      UIGuide.peripherals.box.remove();
+    if (this.peripherals.box) {
+      this.peripherals.box.remove();
     }
 
-    delete UIGuide.peripherals.popup;
-    delete UIGuide.peripherals.backdrop;
-    delete UIGuide.peripherals.box;
-    delete UIGuide.element;
-    delete UIGuide.highlighting;
+    delete this.peripherals.popup;
+    delete this.peripherals.backdrop;
+    delete this.peripherals.box;
+    delete this.element;
+    delete this.highlighting;
   }
 
   private static element?: HTMLElement;
   private static highlighting?: IDeferredPromise<HTMLElement>;
-  // @ts-ignore
   private static peripherals: IPeripherals = {};
   private static popper?: Popper;
 
   private static udpdatePeripheralsUntilUnhighlight() {
-    if (!UIGuide.element) return;
+    if (!this.element) return;
 
-    const clientRect = UIGuide.element.getBoundingClientRect();
+    const clientRect = this.element.getBoundingClientRect();
 
     requestAnimationFrame(() => {
-      if (!UIGuide.peripherals.box) return;
+      if (!this.peripherals.box) return;
 
-      UIGuide.peripherals.box.style.left = clientRect.left + 'px';
-      UIGuide.peripherals.box.style.top = clientRect.top + 'px';
-      UIGuide.peripherals.box.style.width = clientRect.width + 'px';
-      UIGuide.peripherals.box.style.height = clientRect.height + 'px';
+      this.peripherals.box.style.left = clientRect.left + 'px';
+      this.peripherals.box.style.top = clientRect.top + 'px';
+      this.peripherals.box.style.width = clientRect.width + 'px';
+      this.peripherals.box.style.height = clientRect.height + 'px';
 
-      if (UIGuide.popper) {
-        UIGuide.popper.update();
+      if (this.popper) {
+        this.popper.update();
       }
 
-      UIGuide.udpdatePeripheralsUntilUnhighlight();
+      this.udpdatePeripheralsUntilUnhighlight();
     });
   }
 }
