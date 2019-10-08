@@ -216,24 +216,18 @@ export default class UIGuide {
   private static popper?: Popper;
 
   private static udpdatePeripheralsUntilUnhighlight() {
-    if (!this.element) return;
+    if (!this.element || !this.peripherals.backdrop) return;
 
-    const offsetParent = this.element.offsetParent;
-    const clientRect =
-      !offsetParent || offsetParent === document.body
-        ? this.element.getBoundingClientRect()
-        : {
-            height: this.element.offsetHeight,
-            left: this.element.offsetLeft,
-            top: this.element.offsetTop,
-            width: this.element.offsetWidth,
-          };
+    const backdropClientRect = this.peripherals.backdrop.getBoundingClientRect();
+    const clientRect = this.element.getBoundingClientRect();
 
     requestAnimationFrame(() => {
       if (!this.peripherals.box) return;
 
-      this.peripherals.box.style.left = clientRect.left + 'px';
-      this.peripherals.box.style.top = clientRect.top + 'px';
+      this.peripherals.box.style.left =
+        clientRect.left - backdropClientRect.left + 'px';
+      this.peripherals.box.style.top =
+        clientRect.top - backdropClientRect.top + 'px';
       this.peripherals.box.style.width = clientRect.width + 'px';
       this.peripherals.box.style.height = clientRect.height + 'px';
 
