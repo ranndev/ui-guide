@@ -2,7 +2,7 @@ import IConfiguration from '../models/configuration';
 import IHighlightOptions from '../models/highlight-options';
 import defer, { IDeferredPromise } from './defer';
 
-export default function queryElement(
+export default function queryWaitElement(
   defaults: IConfiguration,
   options: IHighlightOptions,
 ): IDeferredPromise<HTMLElement> {

@@ -1,5 +1,3 @@
-'use strict';
-
 export interface IDeferredPromise<ResolveValue = any> {
   promise: Promise<ResolveValue>;
   resolve(value: ResolveValue): void;

@@ -1,10 +1,15 @@
-import IPeripherals from './peripherals';
+import { IOutputPeripherals } from './peripherals';
 
 export default interface IEvents {
+  /**
+   * This event triggers when the target element sucessfully queried.
+   */
   onElementQueried: (element: HTMLElement) => Promise<void> | void;
+  /**
+   * This event triggers when all the peripherals are ready.
+   */
   onPerepheralsReady: (
-    peripherals: Pick<IPeripherals, 'popup'> &
-      Required<Pick<IPeripherals, 'backdrop' | 'box'>>,
+    peripherals: IOutputPeripherals,
     element: HTMLElement,
   ) => Promise<void> | void;
 }
