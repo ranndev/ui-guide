@@ -7,7 +7,7 @@ import noop from './utils/noop';
 import queryElement from './utils/query-element';
 
 export default class UIGuide {
-  public static config: IConfiguration = {
+  public static defaults: IConfiguration = {
     classNamePrefix: 'uig',
     classes: {
       backdrop: 'peripherals-backdrop',
@@ -31,9 +31,15 @@ export default class UIGuide {
     },
   };
 
-  public static highlight(options: IHighlightOptions) {
+  public static highlight(opts: IHighlightOptions | Element | string) {
     UIGuide.unhighlight();
-    UIGuide.highlighting = queryElement(UIGuide.config, options);
+
+    const options: IHighlightOptions =
+      opts instanceof Element || typeof opts === 'string'
+        ? { element: opts }
+        : opts;
+
+    UIGuide.highlighting = queryElement(UIGuide.defaults, options);
 
     const events = options.events || {};
 
@@ -48,7 +54,7 @@ export default class UIGuide {
         return emitElementQueried(element);
       })
       .then(() => {
-        return UIGuide.config.events.onElementQueried(UIGuide.element!);
+        return UIGuide.defaults.events.onElementQueried(UIGuide.element!);
       })
       .then(() => {
         document.body.classList.add(classname('highlighting'));
@@ -56,7 +62,7 @@ export default class UIGuide {
 
         const clickable =
           options.clickable === undefined
-            ? UIGuide.config.highlightOptions.clickable
+            ? UIGuide.defaults.highlightOptions.clickable
             : options.clickable;
 
         if (clickable) {
@@ -65,7 +71,7 @@ export default class UIGuide {
 
         const autofocus =
           options.autofocus === undefined
-            ? UIGuide.config.highlightOptions.clickable
+            ? UIGuide.defaults.highlightOptions.clickable
             : options.autofocus;
 
         if (autofocus) {
@@ -85,7 +91,7 @@ export default class UIGuide {
 
         const popup =
           options.popup === undefined
-            ? UIGuide.config.highlightOptions.popup
+            ? UIGuide.defaults.highlightOptions.popup
             : options.popup;
 
         if (popup) {
@@ -107,10 +113,11 @@ export default class UIGuide {
           events.onPerepheralsReady === undefined
             ? noop
             : events.onPerepheralsReady;
+
         return emitPeripheralsReady(UIGuide.peripherals, UIGuide.element!);
       })
       .then(() => {
-        return UIGuide.config.events.onPerepheralsReady(
+        return UIGuide.defaults.events.onPerepheralsReady(
           UIGuide.peripherals,
           UIGuide.element!,
         );
@@ -172,6 +179,7 @@ export default class UIGuide {
 
   private static element?: HTMLElement;
   private static highlighting?: IDeferredPromise<HTMLElement>;
+  // @ts-ignore
   private static peripherals: IPeripherals = {};
   private static popper?: Popper;
 
@@ -197,6 +205,8 @@ export default class UIGuide {
   }
 }
 
-function classname(name: keyof IConfiguration['classes']): string {
-  return UIGuide.config.classNamePrefix + '-' + UIGuide.config.classes[name];
+function classname(name: keyof IConfiguration['classes']) {
+  return (
+    UIGuide.defaults.classNamePrefix + '-' + UIGuide.defaults.classes[name]
+  );
 }

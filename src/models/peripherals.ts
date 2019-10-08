@@ -1,5 +1,5 @@
 export default interface IPeripherals {
-  backdrop?: HTMLElement;
-  box?: HTMLElement;
-  popup?: HTMLElement;
+  backdrop: HTMLElement | undefined;
+  box: HTMLElement | undefined;
+  popup: HTMLElement | undefined;
 }
