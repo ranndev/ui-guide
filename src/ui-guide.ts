@@ -43,6 +43,10 @@ export default class UIGuide {
       );
     }
 
+    if (this.peripherals.backdrop) {
+      this.peripherals.backdrop.classList.remove('show');
+    }
+
     const reused = !!this.element;
     const options: IHighlightOptions =
       opts instanceof Element || typeof opts === 'string'
@@ -152,6 +156,9 @@ export default class UIGuide {
         );
       })
       .then(() => {
+        this.peripherals.backdrop!.classList.add('show');
+        this.peripherals.popup!.classList.add('show');
+
         if (!reused) {
           this.udpdatePeripheralsUntilUnhighlight();
         }
@@ -164,8 +171,9 @@ export default class UIGuide {
           },
         };
       })
-      .catch(() => {
+      .catch((error) => {
         this.unhighlight();
+        return Promise.reject(error);
       })
       .finally(() => {
         delete this.highlighting;
