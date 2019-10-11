@@ -4,6 +4,8 @@ $classes: (
   'box': 'peripherals-box',
   'clickable': 'clickable',
   'highlighted': 'highlighted',
+  'highlighted-non-positioned': 'highlighted-non-positioned',
+  'highlighted-container': 'highlighted-container',
   'highlighting': 'highlighting',
   'popup': 'peripherals-popup',
 );
@@ -43,7 +45,14 @@ body.#{classname('highlighting')} {
   will-change: left, top, width, height;
 }
 
+.#{classname('highlighted-non-positioned')} {
+  position: relative !important;
+}
+
 .#{classname('highlighted')} {
-  position: relative;
-  z-index: 1001;
+  z-index: 1001 !important;
+}
+
+.#{classname('highlighted-container')} {
+  z-index: 1001 !important;
 }

@@ -12,9 +12,13 @@ export default interface IHighlightOptions {
    */
   context?: Element;
   /**
-   * Option wether the target element should be clickabled.
+   * Option wether the target element should be clickable. `true` by default.
    */
   clickable?: boolean;
+  /**
+   * If `clickable` option seems not work, Enabling this option might help.
+   */
+  forcelyMakeClickable?: boolean;
   /**
    * If `true`, will automatically set the focus on the target element.
    */
@@ -41,9 +45,11 @@ export default interface IHighlightOptions {
    * be also a popper options, which will use to override the
    * [default popper options](https://popper.js.org/popper-documentation.html#Popper.Defaults).
    */
-  popup?: boolean | PopperOptions;
+  popup?: boolean | (PopperOptions);
+  popupReference?: 'highlighted-element' | 'highlight-box';
   /**
    * An object of events on where you can listen to.
    */
   events?: Partial<IEvents>;
+  updateDelay?: number;
 }

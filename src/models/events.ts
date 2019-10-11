@@ -1,4 +1,5 @@
-import { IOutputPeripherals } from './peripherals';
+import Popper from 'popper.js';
+import IPeripherals, { IOutputPeripherals } from './peripherals';
 
 export default interface IEvents {
   /**
@@ -12,4 +13,10 @@ export default interface IEvents {
     peripherals: IOutputPeripherals,
     element: HTMLElement,
   ) => Promise<void> | void;
+
+  onUpdate: (context: {
+    element?: HTMLElement;
+    peripherals: IPeripherals;
+    popper?: Popper;
+  }) => void;
 }

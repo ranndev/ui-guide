@@ -1,9 +1,12 @@
 import Popper from 'popper.js';
 import IConfiguration from './models/configuration';
+import IEvents from './models/events';
 import IHighlightOptions from './models/highlight-options';
 import IPeripherals, { IOutputPeripherals } from './models/peripherals';
 import classname from './utils/classname';
 import { IDeferredPromise } from './utils/defer';
+import findHighlightedOffsetParentChild from './utils/find-highlighted-offset-parent-child';
+import isElementPositioned from './utils/is-element-positioned';
 import noop from './utils/noop';
 import queryWaitElement from './utils/query-wait-element';
 
@@ -15,6 +18,8 @@ export default class UIGuide {
       box: 'peripherals-box',
       clickable: 'clickable',
       highlighted: 'highlighted',
+      'highlighted-container': 'highlighted-container',
+      'highlighted-non-positioned': 'highlighted-non-positioned',
       highlighting: 'highlighting',
       popup: 'peripherals-popup',
     },
@@ -25,8 +30,11 @@ export default class UIGuide {
     highlightOptions: {
       autofocus: true,
       clickable: true,
+      forcelyMakeClickable: false,
       maxWait: Infinity,
       popup: true,
+      popupReference: 'highlighted-element',
+      updateDelay: 0,
       wait: true,
       waitDelay: 150,
     },
@@ -44,10 +52,28 @@ export default class UIGuide {
     }
 
     if (this.peripherals.backdrop) {
+      // If backdrop element was reused,
+      // just reset the `show` class then.
       this.peripherals.backdrop.classList.remove('show');
     }
 
-    const reused = !!this.element;
+    let reused = false;
+
+    if (this.element) {
+      // If there's still a highlighted element,
+      // just clean up its classes then.
+      this.element.classList.remove(classname(this.defaults, 'clickable'));
+      this.element.classList.remove(classname(this.defaults, 'highlighted'));
+      this.element.classList.remove(
+        classname(this.defaults, 'highlighted-non-positioned'),
+      );
+      reused = true;
+    }
+
+    if (this.didForceClickable) {
+      this.cleanUpHighlightedContainer();
+    }
+
     const options: IHighlightOptions =
       opts instanceof Element || typeof opts === 'string'
         ? { element: opts }
@@ -73,6 +99,12 @@ export default class UIGuide {
       .then(() => {
         document.body.classList.add(classname(this.defaults, 'highlighting'));
         this.element!.classList.add(classname(this.defaults, 'highlighted'));
+
+        if (!isElementPositioned(this.element!)) {
+          this.element!.classList.add(
+            classname(this.defaults, 'highlighted-non-positioned'),
+          );
+        }
 
         const clickable =
           options.clickable === undefined
@@ -110,12 +142,12 @@ export default class UIGuide {
             ? this.defaults.highlightOptions.popup
             : options.popup;
 
-        if (popup) {
-          if (this.peripherals.popup) {
-            // Prevent reusing of popup element.
-            this.peripherals.popup.remove();
-          }
+        if (this.peripherals.popup) {
+          // Prevent reusing of popup element.
+          this.peripherals.popup.remove();
+        }
 
+        if (popup) {
           this.peripherals.popup = document.createElement('div');
           this.peripherals.popup.classList.add(
             classname(this.defaults, 'popup'),
@@ -128,16 +160,40 @@ export default class UIGuide {
             this.popper.destroy();
           }
 
+          const popupReference =
+            options.popupReference === undefined
+              ? this.defaults.highlightOptions.popupReference
+              : options.popupReference;
+
           this.popper = new Popper(
-            this.element!,
+            popupReference === 'highlight-box'
+              ? this.peripherals.box
+              : this.element!,
             this.peripherals.popup,
             typeof popup === 'boolean' ? undefined : popup,
           );
         }
 
-        (this.element!.offsetParent || document.body).append(
-          this.peripherals.backdrop,
-        );
+        const offsetParent = (this.element!.offsetParent ||
+          document.body) as HTMLElement;
+        const isForcedToBeClickable =
+          options.forcelyMakeClickable === undefined
+            ? this.defaults.highlightOptions.forcelyMakeClickable
+            : options.forcelyMakeClickable;
+
+        if (isForcedToBeClickable) {
+          const elementGrandParent = findHighlightedOffsetParentChild(
+            offsetParent,
+            this.element!,
+          );
+
+          elementGrandParent.classList.add(
+            classname(this.defaults, 'highlighted-container'),
+          );
+        }
+
+        this.didForceClickable = isForcedToBeClickable;
+        offsetParent.append(this.peripherals.backdrop);
 
         const emitPeripheralsReady =
           events.onPerepheralsReady === undefined
@@ -157,7 +213,15 @@ export default class UIGuide {
       })
       .then(() => {
         this.peripherals.backdrop!.classList.add('show');
-        this.peripherals.popup!.classList.add('show');
+        if (this.peripherals.popup) {
+          this.peripherals.popup.classList.add('show');
+        }
+
+        this.customPeripheralsUpdater = events.onUpdate;
+        this.updateDelayUsed =
+          options.updateDelay === undefined
+            ? this.defaults.highlightOptions.updateDelay
+            : options.updateDelay;
 
         if (!reused) {
           this.udpdatePeripheralsUntilUnhighlight();
@@ -192,9 +256,16 @@ export default class UIGuide {
     }
 
     if (this.element) {
-      this.element.classList.remove(classname(this.defaults, 'highlighted'));
       this.element.classList.remove(classname(this.defaults, 'clickable'));
+      this.element.classList.remove(classname(this.defaults, 'highlighted'));
+      this.element.classList.remove(
+        classname(this.defaults, 'highlighted-non-positioned'),
+      );
       delete this.element;
+    }
+
+    if (this.didForceClickable) {
+      this.cleanUpHighlightedContainer();
     }
 
     if (this.popper) {
@@ -222,9 +293,44 @@ export default class UIGuide {
   private static highlighting?: IDeferredPromise<HTMLElement>;
   private static peripherals: IPeripherals = {};
   private static popper?: Popper;
+  private static didForceClickable: boolean = false;
+
+  // Session variables
+
+  private static customPeripheralsUpdater?: IEvents['onUpdate'];
+  private static updateDelayUsed: number = 0;
+
+  private static cleanUpHighlightedContainer() {
+    const className = classname(this.defaults, 'highlighted-container');
+    const highlightedContainer = document.querySelector('.' + className);
+
+    if (highlightedContainer) {
+      highlightedContainer.classList.remove(className);
+    }
+  }
 
   private static udpdatePeripheralsUntilUnhighlight() {
-    if (!this.element || !this.peripherals.backdrop) return;
+    if (!this.element) return;
+
+    if (this.customPeripheralsUpdater) {
+      requestAnimationFrame(() => {
+        if (this.customPeripheralsUpdater) {
+          this.customPeripheralsUpdater({
+            element: this.element,
+            peripherals: this.peripherals,
+            popper: this.popper,
+          });
+
+          setTimeout(() => {
+            this.udpdatePeripheralsUntilUnhighlight();
+          }, this.updateDelayUsed);
+        }
+      });
+
+      return;
+    }
+
+    if (!this.peripherals.backdrop) return;
 
     const backdropClientRect = this.peripherals.backdrop.getBoundingClientRect();
     const clientRect = this.element.getBoundingClientRect();
@@ -243,7 +349,9 @@ export default class UIGuide {
         this.popper.update();
       }
 
-      this.udpdatePeripheralsUntilUnhighlight();
+      setTimeout(() => {
+        this.udpdatePeripheralsUntilUnhighlight();
+      }, this.updateDelayUsed);
     });
   }
 }
