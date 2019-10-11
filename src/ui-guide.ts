@@ -1,357 +1,270 @@
 import Popper from 'popper.js';
-import IConfiguration from './models/configuration';
-import IEvents from './models/events';
+import IGlobalConfiguration from './models/global-configuration';
 import IHighlightOptions from './models/highlight-options';
-import IPeripherals, { IOutputPeripherals } from './models/peripherals';
-import classname from './utils/classname';
-import { IDeferredPromise } from './utils/defer';
-import findHighlightedOffsetParentChild from './utils/find-highlighted-offset-parent-child';
+import IStates, { IHighlighted } from './models/states';
+
+import createClassNamePrefixer from './utils/create-class-name-prefixer';
+import createElementsUpdater from './utils/create-elements-updater';
+import elementBoxUpdater from './utils/default-elements-updater';
 import isElementPositioned from './utils/is-element-positioned';
 import noop from './utils/noop';
 import queryWaitElement from './utils/query-wait-element';
 
-export default class UIGuide {
-  public static defaults: IConfiguration = {
-    classNamePrefix: 'uig',
-    classes: {
-      backdrop: 'peripherals-backdrop',
-      box: 'peripherals-box',
-      clickable: 'clickable',
-      highlighted: 'highlighted',
-      'highlighted-container': 'highlighted-container',
-      'highlighted-non-positioned': 'highlighted-non-positioned',
-      highlighting: 'highlighting',
-      popup: 'peripherals-popup',
+const defaults: IGlobalConfiguration = {
+  classNamePrefix: 'uig',
+  events: {
+    onElementsReady: noop,
+    onTargetElementQueried: noop,
+  },
+  highlightOptions: {
+    autofocus: true,
+    clickable: true,
+    popup: true,
+    popupRef: 'element-target',
+    updateElementsDelay: 0,
+    wait: {
+      delay: 0,
+      max: Infinity,
     },
-    events: {
-      onElementQueried: noop,
-      onPerepheralsReady: noop,
-    },
-    highlightOptions: {
-      autofocus: true,
-      clickable: true,
-      forcelyMakeClickable: false,
-      maxWait: Infinity,
-      popup: true,
-      popupReference: 'highlighted-element',
-      updateDelay: 0,
-      wait: true,
-      waitDelay: 150,
-    },
-  };
+  },
+};
 
-  /**
-   * Highlight an element from the page.
-   */
-  public static highlight(opts: IHighlightOptions | Element | string) {
-    if (this.highlighting) {
-      throw new Error(
-        'UIGuide currently has a pending highlight operation.\n' +
-          'Make sure to await the highlight operation properly before you highlight another element.',
-      );
+const states: IStates = {
+  currentUpdateSession: { delay: 0, ref: 0 },
+  didForceClickable: false,
+  elements: {
+    backdrop: null,
+    box: null,
+    popup: null,
+    target: null,
+  },
+  highlightOperation: null,
+  popper: null,
+};
+
+const classname = createClassNamePrefixer(defaults);
+const update = createElementsUpdater(states);
+
+export default class UIGuide {
+  public static highlight(
+    opts: IHighlightOptions | Element | string,
+  ): Promise<IHighlighted> {
+    if (states.highlightOperation) {
+      if (__DEV__) {
+        throw new Error(
+          'UIGuide currently has a pending highlight operation.\n' +
+            'Make sure to await the highlight operation properly before you highlight another element.',
+        );
+      }
+
+      throw new Error('Highlight operation still pending.');
     }
 
-    if (this.peripherals.backdrop) {
+    if (states.elements.backdrop) {
       // If backdrop element was reused,
       // just reset the `show` class then.
-      this.peripherals.backdrop.classList.remove('show');
+      states.elements.backdrop.classList.remove('show');
     }
 
-    let reused = false;
-
-    if (this.element) {
+    if (states.elements.target) {
       // If there's still a highlighted element,
-      // just clean up its classes then.
-      this.element.classList.remove(classname(this.defaults, 'clickable'));
-      this.element.classList.remove(classname(this.defaults, 'highlighted'));
-      this.element.classList.remove(
-        classname(this.defaults, 'highlighted-non-positioned'),
+      // just remove the possible UIGuide classes to it.
+      states.elements.target.classList.remove(classname('elements', 'target'));
+      states.elements.target.classList.remove(
+        classname('markers', 'clickable'),
       );
-      reused = true;
+      states.elements.target.classList.remove(
+        classname('markers', 'non-positioned'),
+      );
     }
 
-    if (this.didForceClickable) {
-      this.cleanUpHighlightedContainer();
+    if (states.didForceClickable) {
+      const className = classname('markers', 'force-clickable');
+      const element = document.querySelector('.' + className);
+
+      if (element) {
+        element.classList.remove(className);
+      }
     }
 
-    const options: IHighlightOptions =
+    const options =
       opts instanceof Element || typeof opts === 'string'
-        ? { element: opts }
+        ? ({ element: opts } as IHighlightOptions)
         : opts;
 
-    this.highlighting = queryWaitElement(this.defaults, options);
+    states.highlightOperation = queryWaitElement(defaults, options);
 
     const events = options.events || {};
+    return states.highlightOperation.promise
+      .then((target) => {
+        states.elements.target = target;
 
-    return this.highlighting.promise
-      .then((element) => {
-        this.element = element;
+        // Emit target element queried listeners.
+        const emitTargetElementQueried = events.onTargetElementQueried || noop;
+        emitTargetElementQueried(target);
+        defaults.events.onTargetElementQueried(target);
 
-        const emitElementQueried =
-          events.onElementQueried === undefined
-            ? noop
-            : events.onElementQueried;
-        return emitElementQueried(element);
-      })
-      .then(() => {
-        return this.defaults.events.onElementQueried(this.element!);
-      })
-      .then(() => {
-        document.body.classList.add(classname(this.defaults, 'highlighting'));
-        this.element!.classList.add(classname(this.defaults, 'highlighted'));
+        // Add initial classes.
+        document.body.classList.add(classname('markers', 'highlighting'));
+        target.classList.add(classname('elements', 'target'));
 
-        if (!isElementPositioned(this.element!)) {
-          this.element!.classList.add(
-            classname(this.defaults, 'highlighted-non-positioned'),
-          );
+        if (!isElementPositioned(target)) {
+          target.classList.add(classname('markers', 'non-positioned'));
         }
 
         const clickable =
           options.clickable === undefined
-            ? this.defaults.highlightOptions.clickable
+            ? defaults.highlightOptions.clickable
             : options.clickable;
 
         if (clickable) {
-          this.element!.classList.add(classname(this.defaults, 'clickable'));
+          target.classList.add(classname('markers', 'clickable'));
         }
 
-        const autofocus =
+        if (
           options.autofocus === undefined
-            ? this.defaults.highlightOptions.clickable
-            : options.autofocus;
-
-        if (autofocus) {
-          this.element!.focus();
+            ? defaults.highlightOptions.clickable
+            : options.autofocus
+        ) {
+          target.focus();
         }
 
-        if (!this.peripherals.backdrop) {
-          this.peripherals.backdrop = document.createElement('div');
-          this.peripherals.backdrop.classList.add(
-            classname(this.defaults, 'backdrop'),
+        // Create backdrop & box elements.
+        // Reuse if possible.
+
+        if (!states.elements.backdrop) {
+          states.elements.backdrop = document.createElement('div');
+          states.elements.backdrop.className = classname(
+            'elements',
+            'backdrop',
           );
         }
 
-        if (!this.peripherals.box) {
-          this.peripherals.box = document.createElement('div');
-          this.peripherals.box.classList.add(classname(this.defaults, 'box'));
-          this.peripherals.backdrop.append(this.peripherals.box);
+        if (!states.elements.box) {
+          states.elements.box = document.createElement('div');
+          states.elements.box.className = classname('elements', 'box');
+          states.elements.backdrop.append(states.elements.box);
+        }
+
+        // Prevent reusing of popup element.
+
+        if (states.elements.popup) {
+          states.elements.popup.remove();
         }
 
         const popup =
           options.popup === undefined
-            ? this.defaults.highlightOptions.popup
+            ? defaults.highlightOptions.popup
             : options.popup;
 
-        if (this.peripherals.popup) {
-          // Prevent reusing of popup element.
-          this.peripherals.popup.remove();
-        }
-
         if (popup) {
-          this.peripherals.popup = document.createElement('div');
-          this.peripherals.popup.classList.add(
-            classname(this.defaults, 'popup'),
-          );
+          states.elements.popup = document.createElement('div');
+          states.elements.popup.className = classname('elements', 'popup');
+          document.body.append(states.elements.popup);
 
-          document.body.append(this.peripherals.popup);
-
-          if (this.popper) {
+          if (states.popper) {
             // Prevent reusing of popper instance.
-            this.popper.destroy();
+            states.popper.destroy();
           }
 
-          const popupReference =
-            options.popupReference === undefined
-              ? this.defaults.highlightOptions.popupReference
-              : options.popupReference;
+          const popupRef =
+            options.popupRef === undefined
+              ? defaults.highlightOptions.popupRef
+              : options.popupRef;
 
-          this.popper = new Popper(
-            popupReference === 'highlight-box'
-              ? this.peripherals.box
-              : this.element!,
-            this.peripherals.popup,
+          states.popper = new Popper(
+            popupRef === 'element-box' ? states.elements.box : target,
+            states.elements.popup,
             typeof popup === 'boolean' ? undefined : popup,
           );
         }
 
-        const offsetParent = (this.element!.offsetParent ||
-          document.body) as HTMLElement;
-        const isForcedToBeClickable =
-          options.forcelyMakeClickable === undefined
-            ? this.defaults.highlightOptions.forcelyMakeClickable
-            : options.forcelyMakeClickable;
+        const offsetParent = target.offsetParent || document.body;
 
-        if (isForcedToBeClickable) {
-          const elementGrandParent = findHighlightedOffsetParentChild(
-            offsetParent,
-            this.element!,
-          );
+        states.didForceClickable = clickable === 'force';
+        if (states.didForceClickable) {
+          const children = Array.from(offsetParent.children);
 
-          elementGrandParent.classList.add(
-            classname(this.defaults, 'highlighted-container'),
-          );
+          for (const child of children) {
+            if (child.contains(target)) {
+              child.classList.add(classname('markers', 'force-clickable'));
+              break;
+            }
+          }
         }
 
-        this.didForceClickable = isForcedToBeClickable;
-        offsetParent.append(this.peripherals.backdrop);
+        offsetParent.append(states.elements.backdrop);
 
-        const emitPeripheralsReady =
-          events.onPerepheralsReady === undefined
-            ? noop
-            : events.onPerepheralsReady;
+        // Emit element ready listeners.
+        const emitElementsReady = events.onElementsReady || noop;
+        emitElementsReady(states.elements, states.popper);
+        defaults.events.onElementsReady(states.elements, states.popper);
 
-        return emitPeripheralsReady(
-          this.peripherals as IOutputPeripherals,
-          this.element!,
-        );
-      })
-      .then(() => {
-        return this.defaults.events.onPerepheralsReady(
-          this.peripherals as IOutputPeripherals,
-          this.element!,
-        );
-      })
-      .then(() => {
-        this.peripherals.backdrop!.classList.add('show');
-        if (this.peripherals.popup) {
-          this.peripherals.popup.classList.add('show');
+        states.elements.backdrop.classList.add('show');
+        if (states.elements.popup) {
+          states.elements.popup.classList.add('show');
         }
 
-        this.customPeripheralsUpdater = events.onUpdate;
-        this.updateDelayUsed =
-          options.updateDelay === undefined
-            ? this.defaults.highlightOptions.updateDelay
-            : options.updateDelay;
+        update(events.onElementsUpdate || elementBoxUpdater);
 
-        if (!reused) {
-          this.udpdatePeripheralsUntilUnhighlight();
-        }
-      })
-      .then(() => {
         return {
-          element: this.element!,
+          element: target,
           unhighlight: () => {
-            this.unhighlight();
+            UIGuide.unhighlight();
           },
         };
       })
-      .catch((error) => {
-        this.unhighlight();
-        return Promise.reject(error);
-      })
       .finally(() => {
-        delete this.highlighting;
+        states.highlightOperation = null;
       });
   }
 
-  /**
-   * Unhighlight the current highlighted element if available.
-   */
   public static unhighlight() {
-    document.body.classList.remove(classname(this.defaults, 'highlighting'));
+    document.body.classList.remove(classname('markers', 'highlighting'));
 
-    if (this.highlighting) {
-      this.highlighting.reject('Highlight operation terminated.');
-      delete this.highlighting;
+    if (states.highlightOperation) {
+      states.highlightOperation.reject('Highlight operation terminated.');
+      states.highlightOperation = null;
     }
 
-    if (this.element) {
-      this.element.classList.remove(classname(this.defaults, 'clickable'));
-      this.element.classList.remove(classname(this.defaults, 'highlighted'));
-      this.element.classList.remove(
-        classname(this.defaults, 'highlighted-non-positioned'),
+    if (states.elements.target) {
+      states.elements.target.classList.remove(classname('elements', 'target'));
+      states.elements.target.classList.remove(
+        classname('markers', 'clickable'),
       );
-      delete this.element;
+      states.elements.target.classList.remove(
+        classname('markers', 'non-positioned'),
+      );
+      states.elements.target = null;
     }
 
-    if (this.didForceClickable) {
-      this.cleanUpHighlightedContainer();
-    }
+    if (states.didForceClickable) {
+      const className = classname('markers', 'force-clickable');
+      const element = document.querySelector('.' + className);
 
-    if (this.popper) {
-      this.popper.destroy();
-      delete this.popper;
-    }
-
-    if (this.peripherals.popup) {
-      this.peripherals.popup.remove();
-      delete this.peripherals.popup;
-    }
-
-    if (this.peripherals.backdrop) {
-      this.peripherals.backdrop.remove();
-      delete this.peripherals.backdrop;
-    }
-
-    if (this.peripherals.box) {
-      this.peripherals.box.remove();
-      delete this.peripherals.box;
-    }
-  }
-
-  private static element?: HTMLElement;
-  private static highlighting?: IDeferredPromise<HTMLElement>;
-  private static peripherals: IPeripherals = {};
-  private static popper?: Popper;
-  private static didForceClickable: boolean = false;
-
-  // Session variables
-
-  private static customPeripheralsUpdater?: IEvents['onUpdate'];
-  private static updateDelayUsed: number = 0;
-
-  private static cleanUpHighlightedContainer() {
-    const className = classname(this.defaults, 'highlighted-container');
-    const highlightedContainer = document.querySelector('.' + className);
-
-    if (highlightedContainer) {
-      highlightedContainer.classList.remove(className);
-    }
-  }
-
-  private static udpdatePeripheralsUntilUnhighlight() {
-    if (!this.element) return;
-
-    if (this.customPeripheralsUpdater) {
-      requestAnimationFrame(() => {
-        if (this.customPeripheralsUpdater) {
-          this.customPeripheralsUpdater({
-            element: this.element,
-            peripherals: this.peripherals,
-            popper: this.popper,
-          });
-
-          setTimeout(() => {
-            this.udpdatePeripheralsUntilUnhighlight();
-          }, this.updateDelayUsed);
-        }
-      });
-
-      return;
-    }
-
-    if (!this.peripherals.backdrop) return;
-
-    const backdropClientRect = this.peripherals.backdrop.getBoundingClientRect();
-    const clientRect = this.element.getBoundingClientRect();
-
-    requestAnimationFrame(() => {
-      if (!this.peripherals.box) return;
-
-      this.peripherals.box.style.left =
-        clientRect.left - backdropClientRect.left + 'px';
-      this.peripherals.box.style.top =
-        clientRect.top - backdropClientRect.top + 'px';
-      this.peripherals.box.style.width = clientRect.width + 'px';
-      this.peripherals.box.style.height = clientRect.height + 'px';
-
-      if (this.popper) {
-        this.popper.update();
+      if (element) {
+        element.classList.remove(className);
       }
+    }
 
-      setTimeout(() => {
-        this.udpdatePeripheralsUntilUnhighlight();
-      }, this.updateDelayUsed);
-    });
+    if (states.popper) {
+      states.popper.destroy();
+      states.popper = null;
+    }
+
+    if (states.elements.popup) {
+      states.elements.popup.remove();
+      states.elements.popup = null;
+    }
+
+    if (states.elements.backdrop) {
+      states.elements.backdrop.remove();
+      states.elements.backdrop = null;
+    }
+
+    if (states.elements.box) {
+      states.elements.box.remove();
+      states.elements.box = null;
+    }
   }
 }

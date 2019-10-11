@@ -1,50 +1,53 @@
-import IConfiguration from '../models/configuration';
+import IGlobalConfiguration from '../models/global-configuration';
 import IHighlightOptions from '../models/highlight-options';
 import defer, { IDeferredPromise } from './defer';
 
 export default function queryWaitElement(
-  defaults: IConfiguration,
+  defaults: IGlobalConfiguration,
   options: IHighlightOptions,
 ): IDeferredPromise<HTMLElement> {
   const deferred: IDeferredPromise<HTMLElement> = defer();
 
-  if (options.element instanceof HTMLElement) {
-    deferred.resolve(options.element);
+  if (options.element instanceof Element) {
+    deferred.resolve(options.element as HTMLElement);
     return deferred;
   }
 
   const context = options.context || document;
-
-  let element = context.querySelector<HTMLElement>(options.element as string);
+  let element = context.querySelector<HTMLElement>(options.element);
 
   if (element) {
     deferred.resolve(element);
     return deferred;
   }
 
-  const shouldWait =
+  const waitOptions =
     options.wait === undefined ? defaults.highlightOptions.wait : options.wait;
 
-  if (!shouldWait) {
-    deferred.reject("Can't find the element.");
+  if (!waitOptions) {
+    deferred.reject("Can't find the target element.");
     return deferred;
   }
 
   const delay =
-    options.waitDelay === undefined
-      ? defaults.highlightOptions.waitDelay
-      : options.waitDelay;
-  const maxWait =
-    options.maxWait === undefined
-      ? defaults.highlightOptions.maxWait
-      : options.maxWait;
-  const selector = options.element as string;
+    typeof waitOptions === 'boolean'
+      ? defaults.highlightOptions.wait.delay
+      : waitOptions.delay === undefined
+      ? defaults.highlightOptions.wait.delay
+      : waitOptions.delay;
+  const max =
+    typeof waitOptions === 'boolean'
+      ? defaults.highlightOptions.wait.max
+      : waitOptions.max === undefined
+      ? defaults.highlightOptions.wait.max
+      : waitOptions.max;
+  const selector = options.element;
 
   let elapsedTime = 0;
   const interval = setInterval(() => {
     elapsedTime += delay;
 
-    if (elapsedTime > maxWait) {
+    if (elapsedTime >= max) {
       deferred.reject("Max wait reached. Can't find the element.");
     }
 

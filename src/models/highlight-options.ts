@@ -1,6 +1,21 @@
 import { PopperOptions } from 'popper.js';
 import IEvents from './events';
 
+export interface IHighlightWaitObject {
+  /**
+   * A delay in milliseconds before it will try to find the target element
+   * again. Unnecessary when `wait` is `false`. Default value is `150`
+   * milliseconds.
+   */
+  delay?: number;
+  /**
+   * A maximum wait time before it give up on searching for target element.
+   * An error will be thrown when the set `maxWait` reached. Default value is
+   * `Infinity`.
+   */
+  max?: number;
+}
+
 export default interface IHighlightOptions {
   /**
    * The target element or the selector for the target element to be highlighted.
@@ -14,42 +29,26 @@ export default interface IHighlightOptions {
   /**
    * Option wether the target element should be clickable. `true` by default.
    */
-  clickable?: boolean;
+  clickable?: boolean | 'force';
   /**
    * If `clickable` option seems not work, Enabling this option might help.
-   */
-  forcelyMakeClickable?: boolean;
-  /**
-   * If `true`, will automatically set the focus on the target element.
    */
   autofocus?: boolean;
   /**
    * If `false`, It will throw an error when target element is not found on the
    * first try.
    */
-  wait?: boolean;
-  /**
-   * A delay in milliseconds before it will try to find the target element
-   * again. Unnecessary when `wait` is `false`. Default value is `150`
-   * milliseconds.
-   */
-  waitDelay?: number;
-  /**
-   * A maximum wait time before it give up on searching for target element.
-   * An error will be thrown when the set `maxWait` reached. Default value is
-   * `Infinity`.
-   */
-  maxWait?: number;
+  wait?: boolean | IHighlightWaitObject;
   /**
    * If `true`, a popup will show using the default popper.js options. It can
-   * be also a popper options, which will use to override the
+   * also be a popper options, which will use to override the
    * [default popper options](https://popper.js.org/popper-documentation.html#Popper.Defaults).
    */
-  popup?: boolean | (PopperOptions);
-  popupReference?: 'highlighted-element' | 'highlight-box';
+  popup?: boolean | PopperOptions;
+  popupRef?: 'element-target' | 'element-box';
   /**
    * An object of events on where you can listen to.
    */
   events?: Partial<IEvents>;
-  updateDelay?: number;
+  updateElementsDelay?: number;
 }

@@ -1,22 +1,16 @@
 import Popper from 'popper.js';
-import IPeripherals, { IOutputPeripherals } from './peripherals';
+import IHighlightElements from './highlight-elements';
 
 export default interface IEvents {
-  /**
-   * This event triggers when the target element sucessfully queried.
-   */
-  onElementQueried: (element: HTMLElement) => Promise<void> | void;
-  /**
-   * This event triggers when all the peripherals are ready.
-   */
-  onPerepheralsReady: (
-    peripherals: IOutputPeripherals,
-    element: HTMLElement,
-  ) => Promise<void> | void;
+  onTargetElementQueried: (element: HTMLElement) => void;
 
-  onUpdate: (context: {
-    element?: HTMLElement;
-    peripherals: IPeripherals;
-    popper?: Popper;
-  }) => void;
+  onElementsReady: (
+    elements: IHighlightElements,
+    popper: Popper | null,
+  ) => void;
+
+  onElementsUpdate: (
+    elements: IHighlightElements,
+    popper: Popper | null,
+  ) => void;
 }
