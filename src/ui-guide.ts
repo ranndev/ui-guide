@@ -3,7 +3,7 @@ import IGlobalConfiguration from './models/global-configuration';
 import IHighlightOptions from './models/highlight-options';
 import IStates, { IHighlighted } from './models/states';
 
-import createClassNamePrefixer from './utils/create-class-name-prefixer';
+import createAttrPrefixer from './utils/create-attr-prefixer';
 import createElementsUpdater from './utils/create-elements-updater';
 import elementBoxUpdater from './utils/default-elements-updater';
 import isElementPositioned from './utils/is-element-positioned';
@@ -11,7 +11,7 @@ import noop from './utils/noop';
 import queryWaitElement from './utils/query-wait-element';
 
 const defaults: IGlobalConfiguration = {
-  classNamePrefix: 'uig',
+  attrPrefix: 'uig',
   events: {
     onElementsReady: noop,
     onTargetElementQueried: noop,
@@ -42,7 +42,7 @@ const states: IStates = {
   popper: null,
 };
 
-const classname = createClassNamePrefixer(defaults);
+const attr = createAttrPrefixer(defaults);
 const update = createElementsUpdater(states);
 
 export default class UIGuide {
@@ -62,29 +62,23 @@ export default class UIGuide {
 
     if (states.elements.backdrop) {
       // If backdrop element was reused,
-      // just reset the `show` class then.
-      states.elements.backdrop.classList.remove('show');
+      // just reset the `show` marker attribute then.
+      states.elements.backdrop.removeAttribute(attr('markers', 'show'));
     }
 
     if (states.elements.target) {
       // If there's still a highlighted element,
-      // just remove the possible UIGuide classes to it.
-      states.elements.target.classList.remove(classname('elements', 'target'));
-      states.elements.target.classList.remove(
-        classname('markers', 'clickable'),
-      );
-      states.elements.target.classList.remove(
-        classname('markers', 'non-positioned'),
-      );
+      // just remove the possible UIGuide attributes to it.
+      states.elements.target.removeAttribute(attr('elements', 'target'));
+      states.elements.target.removeAttribute(attr('markers', 'clickable'));
+      states.elements.target.removeAttribute(attr('markers', 'non-positioned'));
     }
 
     if (states.didForceClickable) {
-      const className = classname('markers', 'force-clickable');
-      const element = document.querySelector('.' + className);
+      const attrName = attr('markers', 'force-clickable');
+      const element = document.querySelector(`[${attrName}]`);
 
-      if (element) {
-        element.classList.remove(className);
-      }
+      element?.removeAttribute(attrName)
     }
 
     const options =
@@ -104,12 +98,12 @@ export default class UIGuide {
         emitTargetElementQueried(target);
         defaults.events.onTargetElementQueried(target);
 
-        // Add initial classes.
-        document.body.classList.add(classname('markers', 'highlighting'));
-        target.classList.add(classname('elements', 'target'));
+        // Add initial attributes.
+        document.body.setAttribute(attr('markers', 'highlighting'), '');
+        target.setAttribute(attr('elements', 'target'), '');
 
         if (!isElementPositioned(target)) {
-          target.classList.add(classname('markers', 'non-positioned'));
+          target.setAttribute(attr('markers', 'non-positioned'), '');
         }
 
         const clickable =
@@ -118,7 +112,7 @@ export default class UIGuide {
             : options.clickable;
 
         if (clickable) {
-          target.classList.add(classname('markers', 'clickable'));
+          target.setAttribute(attr('markers', 'clickable'), '');
         }
 
         if (
@@ -134,15 +128,12 @@ export default class UIGuide {
 
         if (!states.elements.backdrop) {
           states.elements.backdrop = document.createElement('div');
-          states.elements.backdrop.className = classname(
-            'elements',
-            'backdrop',
-          );
+          states.elements.backdrop.setAttribute(attr('elements', 'backdrop'), '');
         }
 
         if (!states.elements.box) {
           states.elements.box = document.createElement('div');
-          states.elements.box.className = classname('elements', 'box');
+          states.elements.box.setAttribute(attr('elements', 'box'), '');
           states.elements.backdrop.append(states.elements.box);
         }
 
@@ -159,7 +150,7 @@ export default class UIGuide {
 
         if (popup) {
           states.elements.popup = document.createElement('div');
-          states.elements.popup.className = classname('elements', 'popup');
+          states.elements.popup.setAttribute(attr('elements', 'popup'), '');
           document.body.append(states.elements.popup);
 
           if (states.popper) {
@@ -187,7 +178,7 @@ export default class UIGuide {
 
           for (const child of children) {
             if (child.contains(target)) {
-              child.classList.add(classname('markers', 'force-clickable'));
+              child.setAttribute(attr('markers', 'force-clickable'), '');
               break;
             }
           }
@@ -200,10 +191,8 @@ export default class UIGuide {
         emitElementsReady(states.elements, states.popper);
         defaults.events.onElementsReady(states.elements, states.popper);
 
-        states.elements.backdrop.classList.add('show');
-        if (states.elements.popup) {
-          states.elements.popup.classList.add('show');
-        }
+        states.elements.backdrop.setAttribute(attr('markers', 'show'), '');
+        states.elements.popup?.setAttribute(attr('markers', 'show'), '')
 
         update(events.onElementsUpdate || elementBoxUpdater);
 
@@ -220,7 +209,7 @@ export default class UIGuide {
   }
 
   public static unhighlight() {
-    document.body.classList.remove(classname('markers', 'highlighting'));
+    document.body.removeAttribute(attr('markers', 'highlighting'));
 
     if (states.highlightOperation) {
       states.highlightOperation.reject('Highlight operation terminated.');
@@ -228,23 +217,19 @@ export default class UIGuide {
     }
 
     if (states.elements.target) {
-      states.elements.target.classList.remove(classname('elements', 'target'));
-      states.elements.target.classList.remove(
-        classname('markers', 'clickable'),
-      );
-      states.elements.target.classList.remove(
-        classname('markers', 'non-positioned'),
+      states.elements.target.removeAttribute(attr('elements', 'target'));
+      states.elements.target.removeAttribute(attr('markers', 'clickable'));
+      states.elements.target.removeAttribute(
+        attr('markers', 'non-positioned'),
       );
       states.elements.target = null;
     }
 
     if (states.didForceClickable) {
-      const className = classname('markers', 'force-clickable');
+      const className = attr('markers', 'force-clickable');
       const element = document.querySelector('.' + className);
 
-      if (element) {
-        element.classList.remove(className);
-      }
+      element?.removeAttribute(className);
     }
 
     if (states.popper) {

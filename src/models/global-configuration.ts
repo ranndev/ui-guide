@@ -8,7 +8,7 @@ type GlobalHighlightOptions = Required<
 };
 
 export default interface IGlobalConfiguration {
-  classNamePrefix: string;
+  attrPrefix: string;
   events: Required<Omit<IEvents, 'onElementsUpdate'>>;
   highlightOptions: GlobalHighlightOptions;
 }

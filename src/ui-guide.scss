@@ -1,30 +1,35 @@
-$class-prefix: 'uig';
+$attr-prefix: 'uig';
 
-$class-markers: (
+$attr-markers: (
   'clickable': 'clickable',
   'non-positioned': 'non-positioned',
   'force-clickable': 'force-clickable',
   'highlighting': 'highlighting',
+  'show': 'show',
 );
 
-$class-elements: (
+$attr-elements: (
   'backdrop': 'backdrop',
   'box': 'box',
   'target': 'target',
   'popup': 'popup',
 );
 
-@function classname($type, $key) {
+@function attr($type, $key) {
+  $attr: '';
+
   @if ($type == 'elements') {
-    @return $class-prefix + '-elements-' + map-get($class-elements, $key);
+    $attr: $attr-prefix + '-elements-' + map-get($attr-elements, $key);
   } @else if ($type == 'markers') {
-    @return $class-prefix + '-markers-' + map-get($class-markers, $key);
+    $attr: $attr-prefix + '-markers-' + map-get($attr-markers, $key);
   } @else {
     @error 'Invalid classname type.';
   }
+
+  @return '[' + $attr + ']';
 }
 
-.#{classname('elements', 'backdrop')} {
+#{attr('elements', 'backdrop')} {
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -33,14 +38,14 @@ $class-elements: (
   bottom: 0;
 }
 
-body.#{classname('markers', 'highlighting')} * {
+body#{attr('markers', 'highlighting')} * {
   pointer-events: none !important;
 }
 
-body.#{classname('markers', 'highlighting')} {
-  .#{classname('elements', 'backdrop')},
-  .#{classname('elements', 'popup')},
-  .#{classname('markers', 'clickable')} {
+body#{attr('markers', 'highlighting')} {
+  #{attr('elements', 'backdrop')},
+  #{attr('elements', 'popup')},
+  #{attr('markers', 'clickable')} {
     pointer-events: all !important;
 
     * {
@@ -49,20 +54,20 @@ body.#{classname('markers', 'highlighting')} {
   }
 }
 
-.#{classname('elements', 'box')} {
+#{attr('elements', 'box')} {
   position: absolute;
   display: inline-block;
   will-change: left, top, width, height;
 }
 
-.#{classname('markers', 'non-positioned')} {
+#{attr('markers', 'non-positioned')} {
   position: relative !important;
 }
 
-.#{classname('elements', 'target')} {
+#{attr('elements', 'target')} {
   z-index: 1001 !important;
 }
 
-.#{classname('markers', 'force-clickable')} {
+#{attr('markers', 'force-clickable')} {
   z-index: 1001 !important;
 }
