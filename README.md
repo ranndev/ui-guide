@@ -4,7 +4,7 @@ Your UI guide helper for your application.
 
 ## Inspiration
 
-[Intro.js]() - Step-by-step guide and feature introduction
+[Intro.js](https://introjs.com/) - Step-by-step guide and feature introduction.
 
 ## Author
 

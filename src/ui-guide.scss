@@ -1,0 +1,73 @@
+$attr-prefix: 'uig';
+
+$attr-markers: (
+  'clickable': 'clickable',
+  'non-positioned': 'non-positioned',
+  'force-clickable': 'force-clickable',
+  'highlighting': 'highlighting',
+  'show': 'show',
+);
+
+$attr-elements: (
+  'backdrop': 'backdrop',
+  'box': 'box',
+  'target': 'target',
+  'popup': 'popup',
+);
+
+@function attr($type, $key) {
+  $attr: '';
+
+  @if ($type == 'elements') {
+    $attr: $attr-prefix + '-elements-' + map-get($attr-elements, $key);
+  } @else if ($type == 'markers') {
+    $attr: $attr-prefix + '-markers-' + map-get($attr-markers, $key);
+  } @else {
+    @error 'Invalid classname type.';
+  }
+
+  @return '[' + $attr + ']';
+}
+
+#{attr('elements', 'backdrop')} {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+body#{attr('markers', 'highlighting')} * {
+  pointer-events: none !important;
+}
+
+body#{attr('markers', 'highlighting')} {
+  #{attr('elements', 'backdrop')},
+  #{attr('elements', 'popup')},
+  #{attr('markers', 'clickable')} {
+    pointer-events: all !important;
+
+    * {
+      pointer-events: all !important;
+    }
+  }
+}
+
+#{attr('elements', 'box')} {
+  position: absolute;
+  display: inline-block;
+  will-change: left, top, width, height;
+}
+
+#{attr('markers', 'non-positioned')} {
+  position: relative !important;
+}
+
+#{attr('elements', 'target')} {
+  z-index: 1001 !important;
+}
+
+#{attr('markers', 'force-clickable')} {
+  z-index: 1001 !important;
+}
