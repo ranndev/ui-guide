@@ -7,18 +7,12 @@ export default function createClassNamePrefixer(
   /**
    * Create a markers class name.
    */
-  function prefixAttrName(
-    type: 'markers',
-    value: IAttrNames['markers'],
-  ): string;
+  function prefixAttrName(type: 'markers', value: IAttrNames['markers']): string;
 
   /**
    * Create a highlight class name.
    */
-  function prefixAttrName(
-    type: 'elements',
-    value: IAttrNames['elements'],
-  ): string;
+  function prefixAttrName(type: 'elements', value: IAttrNames['elements']): string;
 
   /**
    * Implementation.
