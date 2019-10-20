@@ -15,7 +15,5 @@ export default function elementBoxUpdater(
   elements.box.style.width = targetRect.width + 'px';
   elements.box.style.height = targetRect.height + 'px';
 
-  if (popper) {
-    popper.update();
-  }
+  popper?.update()
 }

@@ -106,20 +106,13 @@ export default class UIGuide {
           target.setAttribute(attr('markers', 'non-positioned'), '');
         }
 
-        const clickable =
-          options.clickable === undefined
-            ? defaults.highlightOptions.clickable
-            : options.clickable;
+        const clickable = options.clickable ?? defaults.highlightOptions.clickable
 
         if (clickable) {
           target.setAttribute(attr('markers', 'clickable'), '');
         }
 
-        if (
-          options.autofocus === undefined
-            ? defaults.highlightOptions.clickable
-            : options.autofocus
-        ) {
+        if (options.autofocus ?? defaults.highlightOptions.clickable) {
           target.focus();
         }
 
@@ -143,10 +136,7 @@ export default class UIGuide {
           states.elements.popup.remove();
         }
 
-        const popup =
-          options.popup === undefined
-            ? defaults.highlightOptions.popup
-            : options.popup;
+        const popup = options.popup ?? defaults.highlightOptions.popup
 
         if (popup) {
           states.elements.popup = document.createElement('div');
@@ -158,10 +148,7 @@ export default class UIGuide {
             states.popper.destroy();
           }
 
-          const popupRef =
-            options.popupRef === undefined
-              ? defaults.highlightOptions.popupRef
-              : options.popupRef;
+          const popupRef = options.popupRef ?? defaults.highlightOptions.popupRef
 
           states.popper = new Popper(
             popupRef === 'element-box' ? states.elements.box : target,
@@ -211,10 +198,8 @@ export default class UIGuide {
   public static unhighlight() {
     document.body.removeAttribute(attr('markers', 'highlighting'));
 
-    if (states.highlightOperation) {
-      states.highlightOperation.reject('Highlight operation terminated.');
-      states.highlightOperation = null;
-    }
+    states.highlightOperation?.reject('Highlight operation terminated.');
+    states.highlightOperation = null;
 
     if (states.elements.target) {
       states.elements.target.removeAttribute(attr('elements', 'target'));
@@ -232,24 +217,16 @@ export default class UIGuide {
       element?.removeAttribute(className);
     }
 
-    if (states.popper) {
-      states.popper.destroy();
-      states.popper = null;
-    }
+    states.popper?.destroy();
+    states.popper = null;
 
-    if (states.elements.popup) {
-      states.elements.popup.remove();
-      states.elements.popup = null;
-    }
+    states.elements.popup?.remove();
+    states.elements.popup = null;
 
-    if (states.elements.backdrop) {
-      states.elements.backdrop.remove();
-      states.elements.backdrop = null;
-    }
+    states.elements.backdrop?.remove();
+    states.elements.backdrop = null;
 
-    if (states.elements.box) {
-      states.elements.box.remove();
-      states.elements.box = null;
-    }
+    states.elements.box?.remove();
+    states.elements.box = null;
   }
 }

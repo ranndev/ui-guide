@@ -21,8 +21,7 @@ export default function queryWaitElement(
     return deferred;
   }
 
-  const waitOptions =
-    options.wait === undefined ? defaults.highlightOptions.wait : options.wait;
+  const waitOptions = options.wait ?? defaults.highlightOptions.wait
 
   if (!waitOptions) {
     deferred.reject("Can't find the target element.");
@@ -32,15 +31,11 @@ export default function queryWaitElement(
   const delay =
     typeof waitOptions === 'boolean'
       ? defaults.highlightOptions.wait.delay
-      : waitOptions.delay === undefined
-      ? defaults.highlightOptions.wait.delay
-      : waitOptions.delay;
+      : waitOptions.delay ?? defaults.highlightOptions.wait.delay
   const max =
     typeof waitOptions === 'boolean'
       ? defaults.highlightOptions.wait.max
-      : waitOptions.max === undefined
-      ? defaults.highlightOptions.wait.max
-      : waitOptions.max;
+      : waitOptions.max ?? defaults.highlightOptions.wait.max
   const selector = options.element;
 
   let elapsedTime = 0;
