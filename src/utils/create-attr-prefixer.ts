@@ -1,9 +1,7 @@
 import IAttrNames from '../models/attr-names';
 import IGlobalConfiguration from '../models/global-configuration';
 
-export default function createClassNamePrefixer(
-  globalConfiguration: IGlobalConfiguration,
-) {
+export default function createAttrPrefixer(defaults: IGlobalConfiguration) {
   /**
    * Create a markers class name.
    */
@@ -21,7 +19,7 @@ export default function createClassNamePrefixer(
     type: keyof IAttrNames,
     value: IAttrNames['markers'] | IAttrNames['elements'],
   ): string {
-    return globalConfiguration.attrPrefix + '-' + type + '-' + value;
+    return defaults.attrPrefix + '-' + type + '-' + value;
   }
 
   return prefixAttrName;

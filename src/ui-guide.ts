@@ -9,6 +9,7 @@ import elementBoxUpdater from './utils/default-elements-updater';
 import isElementPositioned from './utils/is-element-positioned';
 import noop from './utils/noop';
 import queryWaitElement from './utils/query-wait-element';
+import resetStates from './utils/reset-states';
 
 const defaults: IGlobalConfiguration = {
   attrPrefix: 'uig',
@@ -197,36 +198,6 @@ export default class UIGuide {
 
   public static unhighlight() {
     document.body.removeAttribute(attr('markers', 'highlighting'));
-
-    states.highlightOperation?.reject('Highlight operation terminated.');
-    states.highlightOperation = null;
-
-    if (states.elements.target) {
-      states.elements.target.removeAttribute(attr('elements', 'target'));
-      states.elements.target.removeAttribute(attr('markers', 'clickable'));
-      states.elements.target.removeAttribute(
-        attr('markers', 'non-positioned'),
-      );
-      states.elements.target = null;
-    }
-
-    if (states.didForceClickable) {
-      const className = attr('markers', 'force-clickable');
-      const element = document.querySelector('.' + className);
-
-      element?.removeAttribute(className);
-    }
-
-    states.popper?.destroy();
-    states.popper = null;
-
-    states.elements.popup?.remove();
-    states.elements.popup = null;
-
-    states.elements.backdrop?.remove();
-    states.elements.backdrop = null;
-
-    states.elements.box?.remove();
-    states.elements.box = null;
+    resetStates(states, attr)
   }
 }
