@@ -1,35 +1,6 @@
-$attr-prefix: 'uig';
+@import './ui-guide_deps.scss';
 
-$attr-markers: (
-  'clickable': 'clickable',
-  'non-positioned': 'non-positioned',
-  'force-clickable': 'force-clickable',
-  'highlighting': 'highlighting',
-  'show': 'show',
-);
-
-$attr-elements: (
-  'backdrop': 'backdrop',
-  'box': 'box',
-  'target': 'target',
-  'popup': 'popup',
-);
-
-@function attr($type, $key) {
-  $attr: '';
-
-  @if ($type == 'elements') {
-    $attr: $attr-prefix + '-elements-' + map-get($attr-elements, $key);
-  } @else if ($type == 'markers') {
-    $attr: $attr-prefix + '-markers-' + map-get($attr-markers, $key);
-  } @else {
-    @error 'Invalid classname type.';
-  }
-
-  @return '[' + $attr + ']';
-}
-
-#{attr('elements', 'backdrop')} {
+[#{attr('elements', 'backdrop')}] {
   position: fixed;
   z-index: 1000;
   left: 0;
@@ -38,14 +9,14 @@ $attr-elements: (
   bottom: 0;
 }
 
-body#{attr('markers', 'highlighting')} * {
+body[#{attr('markers', 'highlighting')}] * {
   pointer-events: none !important;
 }
 
-body#{attr('markers', 'highlighting')} {
-  #{attr('elements', 'backdrop')},
-  #{attr('elements', 'popup')},
-  #{attr('markers', 'clickable')} {
+body[#{attr('markers', 'highlighting')}] {
+  [#{attr('elements', 'backdrop')}],
+  [#{attr('elements', 'popup')}],
+  [#{attr('markers', 'clickable')}] {
     pointer-events: all !important;
 
     * {
@@ -54,20 +25,20 @@ body#{attr('markers', 'highlighting')} {
   }
 }
 
-#{attr('elements', 'box')} {
+[#{attr('elements', 'box')}] {
   position: absolute;
   display: inline-block;
   will-change: left, top, width, height;
 }
 
-#{attr('markers', 'non-positioned')} {
+[#{attr('markers', 'non-positioned')}] {
   position: relative !important;
 }
 
-#{attr('elements', 'target')} {
+[#{attr('elements', 'target')}] {
   z-index: 1001 !important;
 }
 
-#{attr('markers', 'force-clickable')} {
+[#{attr('markers', 'force-clickable')}] {
   z-index: 1001 !important;
 }

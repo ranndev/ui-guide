@@ -1,0 +1,26 @@
+$attr-prefix: 'uig';
+
+$attr-markers: (
+  'clickable': 'clickable',
+  'non-positioned': 'non-positioned',
+  'force-clickable': 'force-clickable',
+  'highlighting': 'highlighting',
+  'show': 'show',
+);
+
+$attr-elements: (
+  'backdrop': 'backdrop',
+  'box': 'box',
+  'target': 'target',
+  'popup': 'popup',
+);
+
+@function attr($type, $key) {
+  @if ($type == 'elements') {
+    @return $attr-prefix + '-elements-' + map-get($attr-elements, $key);
+  } @else if ($type == 'markers') {
+    @return $attr-prefix + '-markers-' + map-get($attr-markers, $key);
+  } @else {
+    @error 'Invalid attribute type';
+  }
+}
