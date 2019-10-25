@@ -1,5 +1,5 @@
-.ts_cache
 .nyc_output
+.ts_cache
 coverage
 cypress/screenshots
 cypress/videos
