@@ -1,0 +1,32 @@
+@import '../src/ui-guide_deps.scss';
+
+$theme-color: rgb(61, 199, 107);
+$box-gutter-size: 8px;
+$box-border-size: 3px;
+
+[#{attr('elements', 'box')}] {
+  box-sizing: content-box !important;
+  border: $box-border-size solid darken($theme-color, 5%);
+  border-radius: 0.25rem;
+  box-shadow: 0 0 0 999rem rgba(#000, 0.1), 0 0 2rem 0.5rem rgba(#000, 0.3);
+  opacity: 0;
+  will-change: padding, margin, opacity;
+
+  [#{attr('elements', 'backdrop')}][#{attr('markers', 'show')}] & {
+    animation: shrink 0.3s 0.2s forwards;
+
+    @keyframes shrink {
+      from {
+        opacity: 0;
+        padding: $box-gutter-size + 30px;
+        margin: -$box-gutter-size - $box-border-size - 30px;
+      }
+
+      to {
+        opacity: 1;
+        padding: $box-gutter-size;
+        margin: -$box-gutter-size - $box-border-size;
+      }
+    }
+  }
+}

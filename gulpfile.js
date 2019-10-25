@@ -3,7 +3,6 @@ const resolvePlugin = require('rollup-plugin-node-resolve');
 const commonPlugin = require('rollup-plugin-commonjs');
 const registerCleanTask = require('./tasks/clean');
 const registerBuildTask = require('./tasks/build');
-const registerWatchTask = require('./tasks/watch');
 
 const config = {
   dist: path.resolve(__dirname, 'dist'),
@@ -18,4 +17,3 @@ const config = {
 
 registerCleanTask(config);
 registerBuildTask(config);
-registerWatchTask(config);
