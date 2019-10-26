@@ -6,6 +6,7 @@ Your UI guide helper for your application.
 [![Greenkeeper badge](https://badges.greenkeeper.io/rannie-peralta/ui-guide.svg)](https://greenkeeper.io/)
 [![codecov](https://codecov.io/gh/rannie-peralta/ui-guide/branch/develop/graph/badge.svg)](https://codecov.io/gh/rannie-peralta/ui-guide)
 ![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/rannie-peralta/ui-guide)
+![CodeFactor Grade](https://img.shields.io/codefactor/grade/github/rannie-peralta/ui-guide/develop)
 
 ## Inspiration
 
