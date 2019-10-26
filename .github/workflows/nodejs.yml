@@ -17,13 +17,26 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: npm install, build, and test
         run: |
           npm ci
           npm run build
-          npm run e2e:prod
+          npm run e2e:prod | coveralls
           npx codecov --file=./.nyc_output/out.json
         env:
           CI: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKENs }}
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Coveralls Parallel
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.COVERALLS_TOKEN }}
+          parallel: true
+
+      - name: Coveralls Finished
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.COVERALLS_TOKEN }}
+          parallel-finished: true
