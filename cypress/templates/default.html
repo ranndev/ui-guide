@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>UIGuide</title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
   </head>
   <body>
-    <h1 data-uig-id="hello">Hello there!</h1>
-    <h2 data-uig-id="welcome">Welcome to UI Guide</h2>
-    <h2 data-uig-id="lets-do">Let's do some highlighting.</h2>
+    <div id="root">
+      <div data-testid="target-1">Target 1</div>
+      <div data-testid="target-2">Target 2</div>
+    </div>
   </body>
 </html>

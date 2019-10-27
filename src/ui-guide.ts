@@ -51,6 +51,7 @@ export default class UIGuide {
     opts: IHighlightOptions | Element | string,
   ): Promise<IHighlighted> {
     if (states.highlightOperation) {
+      /* istanbul ignore if */
       if (__DEV__) {
         throw new Error(
           'UIGuide currently has a pending highlight operation.\n' +
