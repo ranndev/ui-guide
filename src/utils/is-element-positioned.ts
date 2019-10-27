@@ -10,7 +10,11 @@ export default function isElementPositioned(element: Element) {
   // Using the element's computed style position.
 
   const style = getComputedStyle(element);
-  if (['absolute', 'fixed', 'relative'].includes(style.position || '')) {
+  if (
+    style.position === 'absolute' ||
+    style.position === 'fixed' ||
+    style.position === 'relative'
+  ) {
     return true;
   }
 

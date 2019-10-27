@@ -1,8 +1,25 @@
+const fs = require('fs');
+const path = require('path');
 const babelConfig = require('./babelrc');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const path = require('path');
 const webpack = require('webpack');
+
+const files = fs.readdirSync(path.resolve(__dirname, 'cypress/integration'));
+const htmlWebpackPlugins = files
+  .map((file) => {
+    const filename = file.replace(/\.ts$/, '.html');
+    const htmlLocation = path.resolve(__dirname, 'cypress/templates', filename);
+
+    return fs.existsSync(htmlLocation)
+      ? new HtmlWebpackPlugin({
+          title: filename,
+          filename,
+          template: htmlLocation,
+        })
+      : null;
+  })
+  .filter((plugin) => !!plugin);
 
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
@@ -10,10 +27,10 @@ module.exports = {
   entry: {
     polyfill: '@babel/polyfill',
     'ui-guide': [
-      path.resolve(__dirname, 'src', 'ui-guide.scss'),
-      path.resolve(__dirname, 'themes', 'default.scss'),
-      path.resolve(__dirname, 'templates', 'index.scss'),
-      path.resolve(__dirname, 'src', 'ui-guide.ts'),
+      path.resolve(__dirname, 'src/ui-guide.scss'),
+      path.resolve(__dirname, 'themes/default.scss'),
+      path.resolve(__dirname, 'cypress/templates/index.scss'),
+      path.resolve(__dirname, 'src/ui-guide.ts'),
     ],
   },
   output: {
@@ -47,8 +64,10 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, 'templates', 'index.html'),
+      title: 'Default',
+      template: path.resolve(__dirname, 'cypress/templates/default.html'),
     }),
+    ...htmlWebpackPlugins,
     new MiniCssExtractPlugin({
       filename: 'ui-guide.css',
       hmr: process.env.NODE_ENV === 'development',

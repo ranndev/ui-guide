@@ -1,5 +1,5 @@
 {
+  "projectId": "qgpfnh",
   "baseUrl": "http://localhost:8080",
-  "fixturesFolder": false,
-  "projectId": "qgpfnh"
+  "fixturesFolder": false
 }
