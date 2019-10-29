@@ -12,7 +12,6 @@ export default interface IStates {
     delay: number;
     ref: number;
   };
-  didForceClickable: boolean;
   elements: IHighlightElements;
   popper: Popper | null;
   highlightOperation: IDeferredPromise<HTMLElement> | null;

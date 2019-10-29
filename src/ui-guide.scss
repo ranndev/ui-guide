@@ -38,7 +38,3 @@ body[#{attr('markers', 'highlighting')}] {
 [#{attr('elements', 'target')}] {
   z-index: 1001 !important;
 }
-
-[#{attr('markers', 'force-clickable')}] {
-  z-index: 1001 !important;
-}

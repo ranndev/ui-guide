@@ -32,7 +32,6 @@ const defaults: IGlobalConfiguration = {
 
 const states: IStates = {
   currentUpdateSession: { delay: 0, ref: 0 },
-  didForceClickable: false,
   elements: {
     backdrop: null,
     box: null,
@@ -76,13 +75,6 @@ export default class UIGuide {
       states.elements.target.removeAttribute(attr('markers', 'non-positioned'));
     }
 
-    if (states.didForceClickable) {
-      const attrName = attr('markers', 'force-clickable');
-      const element = document.querySelector(`[${attrName}]`);
-
-      element?.removeAttribute(attrName)
-    }
-
     const options =
       opts instanceof Element || typeof opts === 'string'
         ? ({ element: opts } as IHighlightOptions)
@@ -108,9 +100,7 @@ export default class UIGuide {
           target.setAttribute(attr('markers', 'non-positioned'), '');
         }
 
-        const clickable = options.clickable ?? defaults.highlightOptions.clickable
-
-        if (clickable) {
+        if (options.clickable ?? defaults.highlightOptions.clickable) {
           target.setAttribute(attr('markers', 'clickable'), '');
         }
 
@@ -160,18 +150,6 @@ export default class UIGuide {
         }
 
         const offsetParent = target.offsetParent || document.body;
-
-        states.didForceClickable = clickable === 'force';
-        if (states.didForceClickable) {
-          const children = Array.from(offsetParent.children);
-
-          for (const child of children) {
-            if (child.contains(target)) {
-              child.setAttribute(attr('markers', 'force-clickable'), '');
-              break;
-            }
-          }
-        }
 
         offsetParent.append(states.elements.backdrop);
 
