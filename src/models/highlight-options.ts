@@ -29,7 +29,7 @@ export default interface IHighlightOptions {
   /**
    * Option wether the target element should be clickable. `true` by default.
    */
-  clickable?: boolean | 'force';
+  clickable?: boolean;
   /**
    * If `clickable` option seems not work, Enabling this option might help.
    */

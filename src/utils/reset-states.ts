@@ -15,14 +15,6 @@ export default function resetStates(
     states.elements.target = null;
   }
 
-  if (states.didForceClickable) {
-    const className = attr('markers', 'force-clickable');
-    const element = document.querySelector('.' + className);
-
-    element?.removeAttribute(className);
-    states.didForceClickable = false
-  }
-
   states.popper?.destroy();
   states.popper = null;
 

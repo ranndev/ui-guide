@@ -1,4 +1,4 @@
 export default interface IAttrNames {
-  markers: 'clickable' | 'non-positioned' | 'force-clickable' | 'highlighting' | 'show';
+  markers: 'clickable' | 'non-positioned' | 'highlighting' | 'show';
   elements: 'backdrop' | 'box' | 'target' | 'popup';
 }
