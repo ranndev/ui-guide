@@ -1,5 +1,7 @@
 # ui-guide
 
+![ui-guide-logo](./logo.svg)
+
 Your UI guide helper for your application.
 
 ![Build Status](https://github.com/rannie-peralta/ui-guide/workflows/build/badge.svg?branch=develop)
