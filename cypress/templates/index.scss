@@ -1,3 +1,5 @@
+@import '../../src/ui-guide_deps.scss';
+
 body {
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,4 +17,10 @@ body {
   text-align: center;
   background-color: aliceblue;
   border: 1px solid darken(aliceblue, 10%);
+}
+
+[#{attr('elements', 'backdrop')}][#{attr('markers', 'show')}]
+  [#{attr('elements', 'box')}] {
+  animation-delay: 0s !important;
+  animation-duration: 0s !important;
 }

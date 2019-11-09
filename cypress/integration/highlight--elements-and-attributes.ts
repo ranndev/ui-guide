@@ -9,12 +9,9 @@ describe('highlight - Elements and Attributes', () => {
     });
   });
 
-  before(() => {
-    // tslint:disable-next-line: no-floating-promises
-    uiguide.highlight('[data-testid="target-1"]');
-  });
-
   it('should add all the required attributes and elements', () => {
+    uiguide.highlight('[data-testid="target-1"]');
+
     // Body
     cy.get('body').should('have.attr', 'uig-markers-highlighting');
 
@@ -29,19 +26,24 @@ describe('highlight - Elements and Attributes', () => {
     cy.get('[uig-elements-backdrop]').should('have.attr', 'uig-markers-show');
 
     // Box
-    cy.get('[uig-elements-box]').then(($box) => {
-      expect($box)
-        .to.have.css('left')
-        .and.match(/^[0-9.]+px$/);
-      expect($box)
-        .to.have.css('top')
-        .and.match(/^[0-9.]+px$/);
-      expect($box)
-        .to.have.css('width')
-        .and.match(/^[0-9.]+px$/);
-      expect($box)
-        .to.have.css('height')
-        .and.match(/^[0-9.]+px$/);
-    });
+    cy.get('[uig-elements-box]')
+      .as('box')
+      .then(($box) => {
+        expect($box)
+          .to.have.css('left')
+          .and.match(/^[0-9.]+px$/);
+        expect($box)
+          .to.have.css('top')
+          .and.match(/^[0-9.]+px$/);
+        expect($box)
+          .to.have.css('width')
+          .and.match(/^[0-9.]+px$/);
+        expect($box)
+          .to.have.css('height')
+          .and.match(/^[0-9.]+px$/);
+      });
+    cy.get('@box')
+      .parent()
+      .should('have.attr', 'uig-elements-backdrop');
   });
 });

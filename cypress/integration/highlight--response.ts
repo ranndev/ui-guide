@@ -9,7 +9,7 @@ describe('highlight - Response', () => {
     });
   });
 
-  it('should resolve the highlighted element and unhighighlight function', () => {
+  it('should resolve the highlighted element and unhighlight function', () => {
     const promise = uiguide.highlight('[data-testid="target-1"]');
 
     expect(promise).to.be.a('promise');

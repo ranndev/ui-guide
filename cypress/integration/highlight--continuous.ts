@@ -15,7 +15,6 @@ describe('highlight - Continuous', () => {
     firstHighlightPromise = uiguide.highlight('[data-testid="target-1"]');
 
     expect(() => {
-      // tslint:disable-next-line: no-floating-promises
       uiguide.highlight('[data-testid="target-2"]');
     }).to.throw();
   });

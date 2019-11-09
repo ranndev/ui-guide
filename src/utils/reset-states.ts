@@ -8,6 +8,7 @@ export default function resetStates(
   states.highlightOperation?.reject('Highlight operation terminated.');
   states.highlightOperation = null;
 
+  /* istanbul ignore else */
   if (states.elements.target) {
     states.elements.target.removeAttribute(attr('elements', 'target'));
     states.elements.target.removeAttribute(attr('markers', 'clickable'));
