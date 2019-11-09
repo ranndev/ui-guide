@@ -3,41 +3,36 @@ import IGlobalConfiguration from './models/global-configuration';
 import IHighlightOptions from './models/highlight-options';
 import IStates, { IHighlighted } from './models/states';
 
+// Utilities
+
 import createAttrPrefixer from './utils/create-attr-prefixer';
 import createElementsUpdater from './utils/create-elements-updater';
+import deepExtendConfig from './utils/deep-extend-config';
 import elementBoxUpdater from './utils/default-elements-updater';
 import isElementPositioned from './utils/is-element-positioned';
-import noop from './utils/noop';
 import queryWaitElement from './utils/query-wait-element';
 import resetStates from './utils/reset-states';
 
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
+};
+
 const defaults: IGlobalConfiguration = {
   attrPrefix: 'uig',
-  events: {
-    onElementsReady: noop,
-    onTargetElementQueried: noop,
-  },
+  events: { onElementsReady: undefined, onTargetElementQueried: undefined },
   highlightOptions: {
     autofocus: true,
     clickable: true,
     popup: true,
     popupRef: 'element-target',
     updateElementsDelay: 0,
-    wait: {
-      delay: 0,
-      max: Infinity,
-    },
+    wait: { delay: 0, max: Infinity },
   },
 };
 
 const states: IStates = {
   currentUpdateSession: { delay: 0, ref: 0 },
-  elements: {
-    backdrop: null,
-    box: null,
-    popup: null,
-    target: null,
-  },
+  elements: { backdrop: null, box: null, popup: null, target: null },
   highlightOperation: null,
   popper: null,
 };
@@ -46,6 +41,24 @@ const attr = createAttrPrefixer(defaults);
 const update = createElementsUpdater(states);
 
 export default class UIGuide {
+  /**
+   * Configure the default highlight settings.
+   * @param config New configuration.
+   */
+  public static configure(config: DeepPartial<IGlobalConfiguration>) {
+    if (states.highlightOperation) {
+      throw new Error(
+        'Changing of configuration is forbidden while there is a pending highlight operation.'
+      );
+    }
+
+    deepExtendConfig(defaults, config);
+  }
+
+  /**
+   * Highlight an element from the page.
+   * @param opts Highlight options.
+   */
   public static highlight(
     opts: IHighlightOptions | Element | string,
   ): Promise<IHighlighted> {
@@ -88,9 +101,8 @@ export default class UIGuide {
         states.elements.target = target;
 
         // Emit target element queried listeners.
-        const emitTargetElementQueried = events.onTargetElementQueried || noop;
-        emitTargetElementQueried(target);
-        defaults.events.onTargetElementQueried(target);
+        events.onTargetElementQueried?.(target)
+        defaults.events.onTargetElementQueried?.(target);
 
         // Add initial attributes.
         document.body.setAttribute(attr('markers', 'highlighting'), '');
@@ -104,7 +116,7 @@ export default class UIGuide {
           target.setAttribute(attr('markers', 'clickable'), '');
         }
 
-        if (options.autofocus ?? defaults.highlightOptions.clickable) {
+        if (options.autofocus ?? defaults.highlightOptions.autofocus) {
           target.focus();
         }
 
@@ -154,9 +166,8 @@ export default class UIGuide {
         offsetParent.append(states.elements.backdrop);
 
         // Emit element ready listeners.
-        const emitElementsReady = events.onElementsReady || noop;
-        emitElementsReady(states.elements, states.popper);
-        defaults.events.onElementsReady(states.elements, states.popper);
+        events.onElementsReady?.(states.elements, states.popper);
+        defaults.events.onElementsReady?.(states.elements, states.popper);
 
         states.elements.backdrop.setAttribute(attr('markers', 'show'), '');
         states.elements.popup?.setAttribute(attr('markers', 'show'), '')
@@ -175,6 +186,9 @@ export default class UIGuide {
       });
   }
 
+  /**
+   * Unhighlight the current highlighted element.
+   */
   public static unhighlight() {
     document.body.removeAttribute(attr('markers', 'highlighting'));
     resetStates(states, attr)
