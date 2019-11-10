@@ -4,7 +4,7 @@
   "description": "Your UI guide helper for your application",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/ui-guide.js",
-  "typings": "./dist/esm/ui-guide.d.ts",
+  "typings": "./dist/typings/ui-guide.d.ts",
   "scripts": {
     "start": "webpack-dev-server",
     "build": "gulp build",

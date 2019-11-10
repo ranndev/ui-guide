@@ -29,11 +29,11 @@ module.exports = async function bundleESM(config) {
   options.plugins.push(
     typescriptPlugin({
       cacheRoot: '.ts_cache/esm',
-      tsconfigOverride: {
-        compilerOptions: {
-          declaration: true,
-        },
-      },
+      // tsconfigOverride: {
+      //   compilerOptions: {
+      //     declaration: true,
+      //   },
+      // },
     }),
   );
 

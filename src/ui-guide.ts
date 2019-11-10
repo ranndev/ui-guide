@@ -48,7 +48,7 @@ export default class UIGuide {
   public static configure(config: DeepPartial<IGlobalConfiguration>) {
     if (states.highlightOperation) {
       throw new Error(
-        'Changing of configuration is forbidden while there is a pending highlight operation.'
+        'Changing of configuration is forbidden while there is a pending highlight operation.',
       );
     }
 
@@ -101,7 +101,7 @@ export default class UIGuide {
         states.elements.target = target;
 
         // Emit target element queried listeners.
-        events.onTargetElementQueried?.(target)
+        events.onTargetElementQueried?.(target);
         defaults.events.onTargetElementQueried?.(target);
 
         // Add initial attributes.
@@ -140,7 +140,7 @@ export default class UIGuide {
           states.elements.popup.remove();
         }
 
-        const popup = options.popup ?? defaults.highlightOptions.popup
+        const popup = options.popup ?? defaults.highlightOptions.popup;
 
         if (popup) {
           states.elements.popup = document.createElement('div');
@@ -152,7 +152,7 @@ export default class UIGuide {
             states.popper.destroy();
           }
 
-          const popupRef = options.popupRef ?? defaults.highlightOptions.popupRef
+          const popupRef = options.popupRef ?? defaults.highlightOptions.popupRef;
 
           states.popper = new Popper(
             popupRef === 'element-box' ? states.elements.box : target,
@@ -170,7 +170,7 @@ export default class UIGuide {
         defaults.events.onElementsReady?.(states.elements, states.popper);
 
         states.elements.backdrop.setAttribute(attr('markers', 'show'), '');
-        states.elements.popup?.setAttribute(attr('markers', 'show'), '')
+        states.elements.popup?.setAttribute(attr('markers', 'show'), '');
 
         update(events.onElementsUpdate || elementBoxUpdater);
 
@@ -191,6 +191,6 @@ export default class UIGuide {
    */
   public static unhighlight() {
     document.body.removeAttribute(attr('markers', 'highlighting'));
-    resetStates(states, attr)
+    resetStates(states, attr);
   }
 }
