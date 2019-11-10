@@ -8,8 +8,9 @@
     "types": ["cypress"]
   },
   "exclude": [
-    ".nyc_output",
-    ".ts_cache",
+    "./.nyc_output",
+    "./.ts_cache",
+    "./.vscode",
     "./coverage",
     "./dist",
     "./node_modules",
