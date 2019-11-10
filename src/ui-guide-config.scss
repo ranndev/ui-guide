@@ -1,4 +1,6 @@
-$attr-prefix: 'uig';
+$attr-prefix: 'uig' !default;
+$backdrop-zindex: 1000 !default;
+$target-zindex: 1001 !default;
 
 $attr-markers: (
   'clickable': 'clickable',
