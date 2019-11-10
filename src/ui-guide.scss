@@ -1,8 +1,8 @@
-@import './ui-guide_deps.scss';
+@import './ui-guide-config';
 
 [#{attr('elements', 'backdrop')}] {
   position: fixed;
-  z-index: 1000;
+  z-index: $backdrop-zindex;
   left: 0;
   right: 0;
   top: 0;
@@ -36,5 +36,5 @@ body[#{attr('markers', 'highlighting')}] {
 }
 
 [#{attr('elements', 'target')}] {
-  z-index: 1001 !important;
+  z-index: $target-zindex !important;
 }

@@ -1,8 +1,8 @@
-@import '../src/ui-guide_deps.scss';
+@import '../src/ui-guide-config';
 
-$theme-color: rgb(61, 199, 107);
-$box-gutter-size: 8px;
-$box-border-size: 3px;
+$theme-color: rgb(61, 199, 107) !default;
+$box-gutter-size: 8px !default;
+$box-border-size: 3px !default;
 
 [#{attr('elements', 'box')}] {
   box-sizing: content-box !important;
