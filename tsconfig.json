@@ -5,7 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "types": ["cypress"]
+    "types": ["cypress", "node"]
   },
   "exclude": [
     "./.nyc_output",
