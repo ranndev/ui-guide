@@ -1,19 +1,33 @@
-const path = require('path');
-const resolvePlugin = require('rollup-plugin-node-resolve');
-const commonPlugin = require('rollup-plugin-commonjs');
-const registerCleanTask = require('./tasks/clean');
-const registerBuildTask = require('./tasks/build');
+const gulp = require('gulp');
+const clean = require('gulp-clean');
+const config = require('./tasks/config');
 
-const config = {
-  dist: path.resolve(__dirname, 'dist'),
-  src: path.relative(__dirname, 'src'),
-  name: 'ui-guide',
-  commonRollupOptions: () => ({
-    input: './src/ui-guide.ts',
-    plugins: [resolvePlugin(), commonPlugin()],
-    external: ['popper.js'],
-  }),
-};
+require('./tasks/css/main');
+require('./tasks/css/themes');
+require('./tasks/js/cjs');
+require('./tasks/js/esm');
+require('./tasks/js/umd');
+require('./tasks/scss/main');
+require('./tasks/scss/themes');
+require('./tasks/typings');
 
-registerCleanTask(config);
-registerBuildTask(config);
+gulp.task('clean', () =>
+  gulp.src(config.base.dest + '/*', { allowEmpty: true, read: false }).pipe(clean()),
+);
+
+gulp.task(
+  'build',
+  gulp.series(
+    'clean',
+    gulp.parallel(
+      'css/main',
+      'css/themes',
+      'js/cjs',
+      'js/esm',
+      'js/umd',
+      'scss/main',
+      'scss/themes',
+      'typings/index',
+    ),
+  ),
+);
