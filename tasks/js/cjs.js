@@ -8,9 +8,43 @@ const replace = require('@rollup/plugin-replace');
 const config = require('../config');
 const utils = require('../utils');
 
+const taskName = utils.taskName(__filename);
 const entry = config.js.entry;
 const dest = config.js.dest;
-const taskName = utils.taskName(__filename);
+
+function transpile({ minified = false } = {}) {
+  const filename = dest.name + (minified ? '.min.js' : '.js');
+  const plugins = [
+    !minified && replace({ __DEV__: 'true' }),
+    ...config.js.rollup.options.plugins,
+    minified &&
+      terser.terser({
+        compress: {
+          dead_code: true,
+          global_defs: { __DEV__: false },
+        },
+        sourcemap: true,
+      }),
+    typescript({
+      cacheRoot: path.resolve(config.js.rollup.cachePath, minified ? 'cjs_min' : 'cjs'),
+    }),
+  ];
+
+  return rollup
+    .rollup({
+      ...config.js.rollup.options,
+      input: path.resolve(config.base.entry, entry.path, entry.name + '.ts'),
+      plugins: plugins.filter(Boolean),
+    })
+    .then((bundle) =>
+      bundle.write({
+        file: path.resolve(config.base.dest, dest.path, 'cjs', filename),
+        format: 'cjs',
+        sourcemap: true,
+      }),
+    );
+}
+
 const tasks = {
   [taskName + ':write-index']: (done) => {
     const content = [
@@ -27,52 +61,8 @@ const tasks = {
       done,
     );
   },
-  [taskName + ':transpile']: () =>
-    rollup
-      .rollup({
-        ...config.js.rollup.options,
-        input: path.resolve(config.base.entry, entry.path, entry.name + '.ts'),
-        plugins: [
-          replace({ __DEV__: 'true' }),
-          ...config.js.rollup.options.plugins,
-          typescript({
-            cacheRoot: path.resolve(config.js.rollup.cachePath, 'cjs'),
-          }),
-        ],
-      })
-      .then((bundle) =>
-        bundle.write({
-          file: path.resolve(config.base.dest, dest.path, 'cjs', dest.name + '.js'),
-          format: 'cjs',
-          sourcemap: true,
-        }),
-      ),
-  [taskName + ':transpile-min']: () =>
-    rollup
-      .rollup({
-        ...config.js.rollup.options,
-        input: path.resolve(config.base.entry, entry.path, entry.name + '.ts'),
-        plugins: [
-          ...config.js.rollup.options.plugins,
-          terser.terser({
-            compress: {
-              dead_code: true,
-              global_defs: { __DEV__: false },
-            },
-            sourcemap: true,
-          }),
-          typescript({
-            cacheRoot: path.resolve(config.js.rollup.cachePath, 'cjs_min'),
-          }),
-        ],
-      })
-      .then((bundle) =>
-        bundle.write({
-          file: path.resolve(config.base.dest, dest.path, 'cjs', dest.name + '.min.js'),
-          format: 'cjs',
-          sourcemap: true,
-        }),
-      ),
+  [taskName + ':transpile']: () => transpile(),
+  [taskName + ':transpile-min']: () => transpile({ minified: true }),
 };
 
 gulp.task(
