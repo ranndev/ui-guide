@@ -24,15 +24,12 @@ const htmlWebpackPlugins = files
 module.exports = {
   mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
   devtool: 'source-map',
-  entry: {
-    polyfill: '@babel/polyfill',
-    'ui-guide': [
-      path.resolve(__dirname, 'src/ui-guide.scss'),
-      path.resolve(__dirname, 'themes/default.scss'),
-      path.resolve(__dirname, 'cypress/templates/index.scss'),
-      path.resolve(__dirname, 'src/ui-guide.ts'),
-    ],
-  },
+  entry: [
+    path.resolve(__dirname, 'src/ui-guide.scss'),
+    path.resolve(__dirname, 'themes/default.scss'),
+    path.resolve(__dirname, 'cypress/templates/index.scss'),
+    path.resolve(__dirname, 'src/ui-guide.ts'),
+  ],
   output: {
     library: ['__LIBRARY__', 'ui-guide'],
   },
