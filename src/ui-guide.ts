@@ -1,58 +1,41 @@
-import Popper from 'popper.js';
-import IGlobalConfiguration from './models/global-configuration';
 import IHighlightOptions from './models/highlight-options';
-import IStates, { IHighlighted } from './models/states';
+
+// Services
+
+import Config from './services/config';
+import UI from './services/ui';
+import UIUpdateScheduler from './services/ui-update-scheduler';
 
 // Utilities
 
-import createAttrPrefixer from './utils/create-attr-prefixer';
-import createElementsUpdater from './utils/create-elements-updater';
-import deepExtendConfig from './utils/deep-extend-config';
-import elementBoxUpdater from './utils/default-elements-updater';
+import { IDeferredPromise } from './utils/defer';
 import isElementPositioned from './utils/is-element-positioned';
 import queryWaitElement from './utils/query-wait-element';
-import resetStates from './utils/reset-states';
 
-type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
-};
+export interface IHighlighted {
+  element: HTMLElement;
+  unhighlight: () => void;
+}
 
-const defaults: IGlobalConfiguration = {
-  attrPrefix: 'uig',
-  events: { onElementsReady: undefined, onTargetElementQueried: undefined },
-  highlightOptions: {
-    autofocus: true,
-    clickable: true,
-    popup: true,
-    popupRef: 'element-target',
-    updateElementsDelay: 0,
-    wait: { delay: 0, max: Infinity },
-  },
-};
+const config = new Config();
+const ui = new UI();
+const updateScheduler = new UIUpdateScheduler(ui);
 
-const states: IStates = {
-  currentUpdateSession: { delay: 0, ref: 0 },
-  elements: { backdrop: null, box: null, popup: null, target: null },
-  highlightOperation: null,
-  popper: null,
-};
-
-const attr = createAttrPrefixer(defaults);
-const update = createElementsUpdater(states);
+let operation: IDeferredPromise<HTMLElement> | null = null;
 
 export default class UIGuide {
   /**
    * Configure the default highlight settings.
    * @param config New configuration.
    */
-  public static configure(config: DeepPartial<IGlobalConfiguration>) {
-    if (states.highlightOperation) {
+  public static configure(configuration: Parameters<Config['update']>[number]) {
+    if (operation) {
       throw new Error(
-        'Changing of configuration is forbidden while there is a pending highlight operation.',
+        'Updating of configuration is forbidden while there is a pending highlight operation.',
       );
     }
 
-    deepExtendConfig(defaults, config);
+    config.update(configuration);
   }
 
   /**
@@ -62,117 +45,65 @@ export default class UIGuide {
   public static highlight(
     opts: IHighlightOptions | Element | string,
   ): Promise<IHighlighted> {
-    if (states.highlightOperation) {
-      /* istanbul ignore if */
-      if (__DEV__) {
-        throw new Error(
-          'UIGuide currently has a pending highlight operation.\n' +
-            'Make sure to await the highlight operation properly before you highlight another element.',
-        );
-      }
-
-      throw new Error('Highlight operation still pending.');
+    if (operation) {
+      throw new Error(
+        __DEV__
+          ? /* istanbul ignore next */
+            'UIGuide currently has a pending highlight operation.\n' +
+            'Make sure that the operation is finished before you highlight again.'
+          : 'Highlight operation still pending.',
+      );
     }
 
-    if (states.elements.backdrop) {
-      // If backdrop element was reused,
-      // just reset the `show` marker attribute then.
-      states.elements.backdrop.removeAttribute(attr('markers', 'show'));
-    }
-
-    if (states.elements.target) {
-      // If there's still a highlighted element,
-      // just remove the possible UIGuide attributes to it.
-      states.elements.target.removeAttribute(attr('elements', 'target'));
-      states.elements.target.removeAttribute(attr('markers', 'clickable'));
-      states.elements.target.removeAttribute(attr('markers', 'non-positioned'));
-    }
+    ui.sanitizeHighlight();
+    ui.sanitizeTarget();
 
     const options =
       opts instanceof Element || typeof opts === 'string'
         ? ({ element: opts } as IHighlightOptions)
         : opts;
-
-    states.highlightOperation = queryWaitElement(defaults, options);
-
     const events = options.events || {};
-    return states.highlightOperation.promise
+
+    operation = queryWaitElement(config.data, options);
+
+    return operation.promise
       .then((target) => {
-        states.elements.target = target;
+        ui.toggleBodyAttr();
+        ui.setTarget(target, {
+          clickable:
+            options.clickable ?? config.data.highlightOptions.clickable,
+          focus: options.autofocus ?? config.data.highlightOptions.autofocus,
+          positioned: isElementPositioned(target),
+        });
 
-        // Emit target element queried listeners.
-        events.onTargetElementQueried?.(target);
-        defaults.events.onTargetElementQueried?.(target);
+        events.onTargetFound?.(target);
+        config.data.events.onTargetFound?.(target);
 
-        // Add initial attributes.
-        document.body.setAttribute(attr('markers', 'highlighting'), '');
-        target.setAttribute(attr('elements', 'target'), '');
+        ui.setHightlight({
+          parent: target.offsetParent || document.body,
+        });
 
-        if (!isElementPositioned(target)) {
-          target.setAttribute(attr('markers', 'non-positioned'), '');
+        const popper = options.popper ?? config.data.highlightOptions.popper;
+
+        if (popper) {
+          ui.setPopup({
+            popperOptions: typeof popper === 'boolean' ? undefined : popper,
+            popperRef:
+              options.popperRef ?? config.data.highlightOptions.popperRef,
+          });
         }
 
-        if (options.clickable ?? defaults.highlightOptions.clickable) {
-          target.setAttribute(attr('markers', 'clickable'), '');
-        }
+        const requiredElements = ui.getUpdateSchedulerRequiredElements();
+        events.onElementsReady?.(requiredElements);
+        config.data.events.onElementsReady?.(requiredElements);
 
-        if (options.autofocus ?? defaults.highlightOptions.autofocus) {
-          target.focus();
-        }
-
-        // Create backdrop & box elements.
-        // Reuse if possible.
-
-        if (!states.elements.backdrop) {
-          states.elements.backdrop = document.createElement('div');
-          states.elements.backdrop.setAttribute(attr('elements', 'backdrop'), '');
-        }
-
-        if (!states.elements.box) {
-          states.elements.box = document.createElement('div');
-          states.elements.box.setAttribute(attr('elements', 'box'), '');
-          states.elements.backdrop.append(states.elements.box);
-        }
-
-        // Prevent reusing of popup element.
-
-        if (states.elements.popup) {
-          states.elements.popup.remove();
-        }
-
-        const popup = options.popup ?? defaults.highlightOptions.popup;
-
-        if (popup) {
-          states.elements.popup = document.createElement('div');
-          states.elements.popup.setAttribute(attr('elements', 'popup'), '');
-          document.body.append(states.elements.popup);
-
-          if (states.popper) {
-            // Prevent reusing of popper instance.
-            states.popper.destroy();
-          }
-
-          const popupRef = options.popupRef ?? defaults.highlightOptions.popupRef;
-
-          states.popper = new Popper(
-            popupRef === 'element-box' ? states.elements.box : target,
-            states.elements.popup,
-            typeof popup === 'boolean' ? undefined : popup,
-          );
-        }
-
-        const offsetParent = target.offsetParent || document.body;
-
-        offsetParent.append(states.elements.backdrop);
-
-        // Emit element ready listeners.
-        events.onElementsReady?.(states.elements, states.popper);
-        defaults.events.onElementsReady?.(states.elements, states.popper);
-
-        states.elements.backdrop.setAttribute(attr('markers', 'show'), '');
-        states.elements.popup?.setAttribute(attr('markers', 'show'), '');
-
-        update(events.onElementsUpdate || elementBoxUpdater);
+        ui.toggleHightlight();
+        ui.togglePopup();
+        updateScheduler.scheduleUpdate(
+          events.onHighlightUpdate ?? config.data.events.onHighlightUpdate,
+          options.highlightUpdateDelay ??
+            config.data.highlightOptions.highlightUpdateDelay,
+        );
 
         return {
           element: target,
@@ -182,7 +113,7 @@ export default class UIGuide {
         };
       })
       .finally(() => {
-        states.highlightOperation = null;
+        operation = null;
       });
   }
 
@@ -190,7 +121,10 @@ export default class UIGuide {
    * Unhighlight the current highlighted element.
    */
   public static unhighlight() {
-    document.body.removeAttribute(attr('markers', 'highlighting'));
-    resetStates(states, attr);
+    updateScheduler.cancelCurrentScheduledUpdate();
+    ui.toggleBodyAttr(false);
+    ui.unsetPopup();
+    ui.unsetHighlight();
+    ui.unsetTarget();
   }
 }

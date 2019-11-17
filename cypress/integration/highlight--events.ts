@@ -11,15 +11,15 @@ describe('highlight - Events', () => {
 
   it('should invoke the event listeners', () => {
     const defaultOnElementsReady = cy.stub();
-    const defaultOnTargetElementQueried = cy.stub();
+    const defaultOnTargetFound = cy.stub();
     const onElementsReady = cy.stub();
-    const onElementsUpdate = cy.stub();
-    const onTargetElementQueried = cy.stub();
+    const onHighlightUpdate = cy.stub();
+    const onTargetFound = cy.stub();
 
     uiguide.configure({
       events: {
         onElementsReady: defaultOnElementsReady,
-        onTargetElementQueried: defaultOnTargetElementQueried,
+        onTargetFound: defaultOnTargetFound,
       },
     });
 
@@ -27,16 +27,16 @@ describe('highlight - Events', () => {
       element: '[data-testid="target-1"]',
       events: {
         onElementsReady,
-        onElementsUpdate,
-        onTargetElementQueried,
+        onHighlightUpdate,
+        onTargetFound,
       },
     });
 
-    cy.get('[uig-elements-backdrop][uig-markers-show]')
+    cy.get('[uig-highlight-backdrop][uig-show]')
       .wrap(
         new Promise((resolve) => {
           const interval = setInterval(() => {
-            if (onElementsUpdate.called) {
+            if (onHighlightUpdate.called) {
               clearInterval(interval);
               resolve(interval);
             }
@@ -45,20 +45,22 @@ describe('highlight - Events', () => {
       )
       .then(() => {
         expect(onElementsReady).to.be.called;
-        expect(onElementsUpdate).to.be.called;
-        expect(onTargetElementQueried).to.be.called;
+        expect(onHighlightUpdate).to.be.called;
+        expect(onTargetFound).to.be.called;
         expect(defaultOnElementsReady).to.be.called;
-        expect(defaultOnTargetElementQueried).to.be.called;
+        expect(defaultOnTargetFound).to.be.called;
 
-        expect(onTargetElementQueried).to.be.calledBefore(onElementsReady);
-        expect(defaultOnTargetElementQueried).to.be.calledImmediatelyAfter(
-          onTargetElementQueried,
+        expect(onTargetFound).to.be.calledBefore(onElementsReady);
+        expect(defaultOnTargetFound).to.be.calledImmediatelyAfter(
+          onTargetFound,
         );
 
-        expect(onElementsReady).to.be.calledAfter(defaultOnTargetElementQueried);
-        expect(defaultOnElementsReady).to.be.calledImmediatelyAfter(onElementsReady);
+        expect(onElementsReady).to.be.calledAfter(defaultOnTargetFound);
+        expect(defaultOnElementsReady).to.be.calledImmediatelyAfter(
+          onElementsReady,
+        );
 
-        expect(onElementsUpdate).to.be.calledAfter(defaultOnElementsReady);
+        expect(onHighlightUpdate).to.be.calledAfter(defaultOnElementsReady);
       });
   });
 });

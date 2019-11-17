@@ -25,7 +25,10 @@ function transpile({ minified = false } = {}) {
         sourcemap: true,
       }),
     typescript({
-      cacheRoot: path.resolve(config.js.rollup.cachePath, minified ? 'umd_min' : 'umd'),
+      cacheRoot: path.resolve(
+        config.js.rollup.cachePath,
+        minified ? 'umd_min' : 'umd',
+      ),
     }),
   ];
 
@@ -53,5 +56,8 @@ const tasks = {
 
 gulp.task(
   taskName,
-  gulp.parallel(tasks[taskName + ':transpile'], tasks[taskName + ':transpile-min']),
+  gulp.parallel(
+    tasks[taskName + ':transpile'],
+    tasks[taskName + ':transpile-min'],
+  ),
 );

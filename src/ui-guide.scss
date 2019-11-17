@@ -1,22 +1,13 @@
-@import './ui-guide-config';
+@import './ui-guide-variables';
 
-[#{attr('elements', 'backdrop')}] {
-  position: fixed;
-  z-index: $backdrop-zindex;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-}
+body[uig-on] {
+  * {
+    pointer-events: none !important;
+  }
 
-body[#{attr('markers', 'highlighting')}] * {
-  pointer-events: none !important;
-}
-
-body[#{attr('markers', 'highlighting')}] {
-  [#{attr('elements', 'backdrop')}],
-  [#{attr('elements', 'popup')}],
-  [#{attr('markers', 'clickable')}] {
+  [uig-highlight-backdrop],
+  [uig-popup],
+  [uig-clickable] {
     pointer-events: all !important;
 
     * {
@@ -25,16 +16,25 @@ body[#{attr('markers', 'highlighting')}] {
   }
 }
 
-[#{attr('elements', 'box')}] {
+[uig-highlight-backdrop] {
+  position: fixed;
+  z-index: $backdrop-zindex;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+[uig-highlight-box] {
   position: absolute;
   display: inline-block;
   will-change: left, top, width, height;
 }
 
-[#{attr('markers', 'non-positioned')}] {
+[uig-non-positioned] {
   position: relative !important;
 }
 
-[#{attr('elements', 'target')}] {
+[uig-target] {
   z-index: $target-zindex !important;
 }

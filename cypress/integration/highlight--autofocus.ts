@@ -11,6 +11,6 @@ describe('highlight - autofocus', () => {
 
   it('should resolve the highlighted element and unhighlight function', () => {
     uiguide.highlight('[data-testid="target-1"]');
-    cy.get('[uig-elements-target]').should('have.focus');
+    cy.get('[uig-target]').should('have.focus');
   });
 });

@@ -44,11 +44,11 @@ export default interface IHighlightOptions {
    * also be a popper options, which will use to override the
    * [default popper options](https://popper.js.org/popper-documentation.html#Popper.Defaults).
    */
-  popup?: boolean | PopperOptions;
-  popupRef?: 'element-target' | 'element-box';
+  popper?: boolean | PopperOptions;
+  popperRef?: 'highlight-target' | 'highlight-box';
   /**
    * An object of events on where you can listen to.
    */
   events?: Partial<IEvents>;
-  updateElementsDelay?: number;
+  highlightUpdateDelay?: number;
 }

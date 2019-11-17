@@ -11,6 +11,6 @@ describe('highlight - Wait', () => {
 
   it('should able to wait for the target element', () => {
     uiguide.highlight('[data-testid="target"]');
-    cy.get('[uig-elements-backdrop][uig-markers-show]');
+    cy.get('[uig-highlight-backdrop][uig-show]');
   });
 });

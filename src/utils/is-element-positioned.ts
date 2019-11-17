@@ -2,7 +2,7 @@ export default function isElementPositioned(element: Element) {
   // 1st check.
   // Using the element's computed style position.
 
-  if (getComputedStyle(element).position !== 'static') {
+  if (window.getComputedStyle(element).position !== 'static') {
     return true;
   }
 

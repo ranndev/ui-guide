@@ -6,11 +6,13 @@
   "module": "./dist/js/esm/ui-guide.js",
   "typings": "./dist/typings/ui-guide.d.ts",
   "scripts": {
-    "start": "webpack-dev-server",
+    "serve": "webpack-dev-server",
     "build": "gulp build",
-    "e2e:dev": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:start\" \"cypress open\"",
-    "e2e:prod": "start-server-and-test start 8080 cy:run",
-    "cy:run": "cypress run --record false"
+    "postbuild": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir \"./dist/typings\"",
+    "start": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:serve\" \"cypress open\"",
+    "test": "start-server-and-test serve 8080 run:cy",
+    "run:cy": "cypress run --record false",
+    "lint": "tslint \"./cypress/**/*.ts\" \"./src/**/*.ts\" \"./typings/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -29,7 +31,9 @@
   },
   "homepage": "https://github.com/rannie-peralta/ui-guide#readme",
   "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.7.0",
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/plugin-proposal-optional-chaining": "^7.6.0",
     "@babel/preset-env": "^7.7.1",
     "@babel/preset-typescript": "^7.7.2",

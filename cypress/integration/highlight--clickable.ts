@@ -11,6 +11,6 @@ describe('highlight - clickable', () => {
 
   it('should resolve the highlighted element and unhighlight function', () => {
     uiguide.highlight('[data-testid="target-1"]');
-    cy.get('[uig-elements-target]').click();
+    cy.get('[uig-target]').click();
   });
 });

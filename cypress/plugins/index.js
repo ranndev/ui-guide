@@ -28,7 +28,6 @@ module.exports = (on, config) => {
         ],
       },
     },
-    watchOptions: {},
   };
 
   on('file:preprocessor', webpack(options));

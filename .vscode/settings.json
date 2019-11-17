@@ -1,6 +1,6 @@
 {
   "editor.formatOnSave": true,
-  "editor.rulers": [90],
+  "editor.rulers": [80],
 
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

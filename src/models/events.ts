@@ -1,10 +1,7 @@
-import Popper from 'popper.js';
-import IHighlightElements from './highlight-elements';
+import { IRequiredElements } from '../services/ui-update-scheduler';
 
 export default interface IEvents {
-  onTargetElementQueried: (element: HTMLElement) => void;
-
-  onElementsReady: (elements: IHighlightElements, popper: Popper | null) => void;
-
-  onElementsUpdate: (elements: IHighlightElements, popper: Popper | null) => void;
+  onTargetFound: (element: HTMLElement) => void;
+  onElementsReady: (elements: IRequiredElements) => void;
+  onHighlightUpdate: (elements: IRequiredElements) => void;
 }

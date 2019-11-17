@@ -9,10 +9,11 @@ require('./tasks/js/esm');
 require('./tasks/js/umd');
 require('./tasks/scss/main');
 require('./tasks/scss/themes');
-require('./tasks/typings');
 
 gulp.task('clean', () =>
-  gulp.src(config.base.dest + '/*', { allowEmpty: true, read: false }).pipe(clean()),
+  gulp
+    .src(config.base.dest + '/*', { allowEmpty: true, read: false })
+    .pipe(clean()),
 );
 
 gulp.task(
@@ -27,7 +28,6 @@ gulp.task(
       'js/umd',
       'scss/main',
       'scss/themes',
-      'typings/index',
     ),
   ),
 );

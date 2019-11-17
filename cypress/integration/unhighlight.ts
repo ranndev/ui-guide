@@ -13,7 +13,7 @@ describe('unhighlight', () => {
   before(() => {
     const promise = uiguide.highlight('[data-testid="target-1"]');
 
-    cy.get('[uig-elements-backdrop][uig-markers-show]')
+    cy.get('[uig-highlight-backdrop][uig-show]')
       .then(() => promise)
       .then((highlighted) => {
         unhighlight = highlighted.unhighlight;
@@ -24,19 +24,19 @@ describe('unhighlight', () => {
     unhighlight();
 
     // Body
-    cy.get('body').should('not.have.attr', 'uig-markers-highlighting');
+    cy.get('body').should('not.have.attr', 'uig-on');
 
     // Target
     cy.get('[data-testid="target-1"]').then(($target) => {
-      expect($target).not.to.have.attr('uig-elements-target');
-      expect($target).not.to.have.attr('uig-markers-clickable');
-      expect($target).not.to.have.attr('uig-markers-non-positioned');
+      expect($target).not.to.have.attr('uig-target');
+      expect($target).not.to.have.attr('uig-clickable');
+      expect($target).not.to.have.attr('uig-non-positioned');
     });
 
     // Backdrop
-    cy.get('[uig-elements-backdrop]').should('not.exist');
+    cy.get('[uig-highlight-backdrop]').should('not.exist');
 
     // Box
-    cy.get('[uig-elements-box]').should('not.exist');
+    cy.get('[uig-highlight-box]').should('not.exist');
   });
 });

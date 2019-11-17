@@ -19,12 +19,22 @@ gulp.task(utils.taskName(__filename), () =>
         ...config.js.rollup.options.plugins,
         typescript({
           cacheRoot: path.resolve(config.js.rollup.cachePath, 'esm'),
+          tsconfigOverride: {
+            compilerOptions: {
+              declaration: true,
+            },
+          },
         }),
       ],
     })
     .then((bundle) =>
       bundle.write({
-        file: path.resolve(config.base.dest, dest.path, 'esm', dest.name + '.js'),
+        file: path.resolve(
+          config.base.dest,
+          dest.path,
+          'esm',
+          dest.name + '.js',
+        ),
         format: 'esm',
         sourcemap: true,
       }),

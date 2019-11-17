@@ -1,10 +1,10 @@
-@import '../src/ui-guide-config';
+@import '../src/ui-guide-variables';
 
 $theme-color: rgb(61, 199, 107) !default;
 $box-gutter-size: 8px !default;
 $box-border-size: 3px !default;
 
-[#{attr('elements', 'box')}] {
+[uig-highlight-box] {
   box-sizing: content-box !important;
   border: $box-border-size solid darken($theme-color, 5%);
   border-radius: 0.25rem;
@@ -12,7 +12,7 @@ $box-border-size: 3px !default;
   opacity: 0;
   will-change: padding, margin, opacity;
 
-  [#{attr('elements', 'backdrop')}][#{attr('markers', 'show')}] & {
+  &[uig-show] {
     animation: shrink 0.3s 0.2s forwards;
 
     @keyframes shrink {
