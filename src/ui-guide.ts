@@ -19,7 +19,7 @@ export interface IHighlighted {
 
 const config = new Config();
 const ui = new UI();
-const updater = new UIUpdateScheduler(ui);
+const updateScheduler = new UIUpdateScheduler(ui);
 
 let operation: IDeferredPromise<HTMLElement> | null = null;
 
@@ -28,14 +28,14 @@ export default class UIGuide {
    * Configure the default highlight settings.
    * @param config New configuration.
    */
-  public static configure(configuration: Parameters<Config['set']>[number]) {
+  public static configure(configuration: Parameters<Config['update']>[number]) {
     if (operation) {
       throw new Error(
-        'Changing of configuration is forbidden while there is a pending highlight operation.',
+        'Updating of configuration is forbidden while there is a pending highlight operation.',
       );
     }
 
-    config.set(configuration);
+    config.update(configuration);
   }
 
   /**
@@ -46,15 +46,12 @@ export default class UIGuide {
     opts: IHighlightOptions | Element | string,
   ): Promise<IHighlighted> {
     if (operation) {
-      /* istanbul ignore if */
-      if (__DEV__) {
-        throw new Error(
-          'UIGuide currently has a pending highlight operation.\n' +
-            'Make sure to await the highlight operation properly before you highlight another element.',
-        );
-      }
-
-      throw new Error('Highlight operation still pending.');
+      throw new Error(
+        __DEV__
+          ? 'UIGuide currently has a pending highlight operation.\n' +
+            'Make sure that the operation is finished before you highlight again.'
+          : 'Highlight operation still pending.',
+      );
     }
 
     ui.sanitizeHighlight();
@@ -101,7 +98,7 @@ export default class UIGuide {
 
         ui.toggleHightlight();
         ui.togglePopup();
-        updater.scheduleUpdate(
+        updateScheduler.scheduleUpdate(
           events.onHighlightUpdate ?? config.data.events.onHighlightUpdate,
           options.highlightUpdateDelay ??
             config.data.highlightOptions.highlightUpdateDelay,
@@ -123,7 +120,7 @@ export default class UIGuide {
    * Unhighlight the current highlighted element.
    */
   public static unhighlight() {
-    updater.cancelCurrentScheduledUpdate();
+    updateScheduler.cancelCurrentScheduledUpdate();
     ui.toggleBodyAttr(false);
     ui.unsetPopup();
     ui.unsetHighlight();

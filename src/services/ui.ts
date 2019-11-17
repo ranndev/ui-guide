@@ -77,8 +77,6 @@ export default class UI {
   }
 
   public toggleHightlight(show = true) {
-    // TODO: Throw on __DEV__ when backdrop or box is empty.
-
     if (this.highlight.backdrop) {
       this.toggleAttrs(this.highlight.backdrop, { show });
     }
@@ -92,8 +90,9 @@ export default class UI {
     popperRef: 'highlight-box' | 'highlight-target';
     popperOptions?: PopperOptions;
   }) {
-    // TODO: Why removing first?
+    // NOTE: Prevent reusing of popup element to avoid issue on popper.js
     this.popup?.parentNode?.removeChild(this.popup);
+
     this.popup = document.createElement('div');
     this.toggleAttrs(this.popup, { popup: true });
 
@@ -101,8 +100,15 @@ export default class UI {
       options.popperRef === 'highlight-box' ? this.highlight.box : this.target;
 
     if (!popperRef) {
-      // TODO: Use descriptive error.
-      throw new Error();
+      throw new Error(
+        __DEV__
+          ? `Popper reference is set to '${
+              options.popperRef
+            }' but highlight\'s ${
+              options.popperRef === 'highlight-box' ? 'box' : 'target'
+            } element is not available.`
+          : 'Popper reference not available.',
+      );
     }
 
     this.popper?.destroy();
@@ -117,8 +123,6 @@ export default class UI {
   }
 
   public togglePopup(show = true) {
-    // TODO: Throw on __DEV__ when popup is empty.
-
     if (this.popup) {
       this.toggleAttrs(this.popup, { show });
     }
@@ -126,13 +130,21 @@ export default class UI {
 
   public getUpdateSchedulerRequiredElements(): IRequiredElements {
     if (!this.target) {
-      // TODO: Use descriptive error.
-      throw new Error();
+      throw new Error(
+        __DEV__
+          ? 'Unable to get the required elements of UpdateScheduler.\n' +
+            'Target element currently not available.'
+          : 'Target element not available.',
+      );
     }
 
     if (!this.highlight.backdrop || !this.highlight.box) {
-      // TODO: Use descriptive error.
-      throw new Error();
+      throw new Error(
+        __DEV__
+          ? 'Unable to get the required elements of UpdateScheduler.\n' +
+            'Highlight elements currently not available.'
+          : 'Highlight elements not available.',
+      );
     }
 
     return {

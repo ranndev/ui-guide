@@ -8,7 +8,7 @@ export type ConfigHighlightOptions = Required<
   Omit<IHighlightOptions, 'element' | 'context' | 'events'>
 >;
 
-type DeepPartial<T> = {
+export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
@@ -33,7 +33,7 @@ export default class Config {
     },
   };
 
-  public set(config: DeepPartial<Config['data']>) {
+  public update(config: DeepPartial<Config['data']>) {
     this.extend(this.data, config);
   }
 
