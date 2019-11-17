@@ -17,6 +17,6 @@ describe("configure - highlight's clickable", () => {
     });
 
     uiguide.highlight('[data-testid="target-1"]');
-    cy.get('[uig-elements-target]').should('have.css', 'pointer-events', 'none');
+    cy.get('[uig-target]').should('have.css', 'pointer-events', 'none');
   });
 });

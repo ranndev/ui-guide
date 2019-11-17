@@ -14,7 +14,7 @@ describe('highlight - Response', () => {
 
     expect(promise).to.be.a('promise');
 
-    cy.get('[uig-elements-backdrop][uig-markers-show]')
+    cy.get('[uig-highlight-backdrop][uig-show]')
       .then(() => promise)
       .then((highlighted) => {
         expect(highlighted.element).to.have.attr('data-testid', 'target-1');

@@ -17,6 +17,6 @@ describe("configure - highlight's autofocus", () => {
     });
 
     uiguide.highlight('[data-testid="target-1"]');
-    cy.get('[uig-elements-target]').should('not.have.focus');
+    cy.get('[uig-target]').should('not.have.focus');
   });
 });

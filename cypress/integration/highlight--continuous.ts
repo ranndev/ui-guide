@@ -1,5 +1,4 @@
-import { IHighlighted } from '../../src/models/states';
-import UIGuide from '../../src/ui-guide';
+import UIGuide, { IHighlighted } from '../../src/ui-guide';
 
 describe('highlight - Continuous', () => {
   let uiguide: typeof UIGuide;
@@ -20,26 +19,30 @@ describe('highlight - Continuous', () => {
   });
 
   it('should cleanup the added attributes on previous target and set to current target', () => {
-    cy.get('[uig-elements-backdrop][uig-markers-show]').then(() => firstHighlightPromise);
+    cy.get('[uig-highlight-backdrop][uig-show]').then(
+      () => firstHighlightPromise,
+    );
 
-    const secondHighlightPromise = uiguide.highlight('[data-testid="target-2"]');
+    const secondHighlightPromise = uiguide.highlight(
+      '[data-testid="target-2"]',
+    );
 
-    cy.get('[uig-elements-backdrop][uig-markers-show]').then(
+    cy.get('[uig-highlight-backdrop][uig-show]').then(
       () => secondHighlightPromise,
     );
 
     // Target 1
     cy.get('[data-testid="target-1"]').then(($target) => {
-      expect($target).not.to.have.attr('uig-elements-target');
-      expect($target).not.to.have.attr('uig-markers-clickable');
-      expect($target).not.to.have.attr('uig-markers-non-positioned');
+      expect($target).not.to.have.attr('uig-target');
+      expect($target).not.to.have.attr('uig-clickable');
+      expect($target).not.to.have.attr('uig-non-positioned');
     });
 
     // Target 2
     cy.get('[data-testid="target-2"]').then(($target) => {
-      expect($target).to.have.attr('uig-elements-target');
-      expect($target).to.have.attr('uig-markers-clickable');
-      expect($target).to.have.attr('uig-markers-non-positioned');
+      expect($target).to.have.attr('uig-target');
+      expect($target).to.have.attr('uig-clickable');
+      expect($target).to.have.attr('uig-non-positioned');
     });
   });
 });

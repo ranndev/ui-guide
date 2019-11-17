@@ -1,9 +1,9 @@
-import IGlobalConfiguration from '../models/global-configuration';
 import IHighlightOptions from '../models/highlight-options';
+import Config from '../services/config';
 import defer, { IDeferredPromise } from './defer';
 
 export default function queryWaitElement(
-  defaults: IGlobalConfiguration,
+  config: Config['data'],
   options: IHighlightOptions,
 ): IDeferredPromise<HTMLElement> {
   const deferred: IDeferredPromise<HTMLElement> = defer();
@@ -21,7 +21,7 @@ export default function queryWaitElement(
     return deferred;
   }
 
-  const waitOptions = options.wait ?? defaults.highlightOptions.wait;
+  const waitOptions = options.wait ?? config.highlightOptions.wait;
 
   if (!waitOptions) {
     deferred.reject("Can't find the target element.");
@@ -30,16 +30,16 @@ export default function queryWaitElement(
 
   const delay =
     typeof waitOptions === 'boolean'
-      ? defaults.highlightOptions.wait.delay
-      : waitOptions.delay ?? defaults.highlightOptions.wait.delay;
+      ? config.highlightOptions.wait.delay
+      : waitOptions.delay ?? config.highlightOptions.wait.delay;
   const max =
     typeof waitOptions === 'boolean'
-      ? defaults.highlightOptions.wait.max
-      : waitOptions.max ?? defaults.highlightOptions.wait.max;
+      ? config.highlightOptions.wait.max
+      : waitOptions.max ?? config.highlightOptions.wait.max;
   const selector = options.element;
 
   let elapsedTime = 0;
-  const interval = setInterval(() => {
+  const interval = window.setInterval(() => {
     elapsedTime += delay;
 
     if (elapsedTime >= max) {
@@ -55,7 +55,7 @@ export default function queryWaitElement(
 
   // tslint:disable-next-line: no-floating-promises
   deferred.promise.finally(() => {
-    clearInterval(interval);
+    window.clearInterval(interval);
   });
 
   return deferred;

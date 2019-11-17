@@ -11,19 +11,19 @@ describe('configure - events', () => {
 
   it('should able to set the global event listeners', () => {
     const onElementsReady = cy.stub();
-    const onTargetElementQueried = cy.stub();
+    const onTargetFound = cy.stub();
 
     uiguide.configure({
       events: {
         onElementsReady,
-        onTargetElementQueried,
+        onTargetFound,
       },
     });
 
     cy.wrap(uiguide.highlight('[data-testid="target-1"]')).then(() => {
       expect(onElementsReady).to.be.called;
-      expect(onTargetElementQueried).to.be.called;
-      expect(onElementsReady).to.be.calledAfter(onTargetElementQueried);
+      expect(onTargetFound).to.be.called;
+      expect(onElementsReady).to.be.calledAfter(onTargetFound);
     });
   });
 });

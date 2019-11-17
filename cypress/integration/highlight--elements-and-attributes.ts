@@ -13,20 +13,23 @@ describe('highlight - Elements and Attributes', () => {
     uiguide.highlight('[data-testid="target-1"]');
 
     // Body
-    cy.get('body').should('have.attr', 'uig-markers-highlighting');
+    cy.get('body').should('have.attr', 'uig-on');
 
     // Target
     cy.get('[data-testid="target-1"]').then(($target) => {
-      expect($target).to.have.attr('uig-elements-target');
-      expect($target).to.have.attr('uig-markers-clickable');
-      expect($target).to.have.attr('uig-markers-non-positioned');
+      expect($target).to.have.attr('uig-target');
+      expect($target).to.have.attr('uig-clickable');
+      expect($target).to.have.attr('uig-non-positioned');
     });
 
     // Backdrop
-    cy.get('[uig-elements-backdrop]').should('have.attr', 'uig-markers-show');
+    cy.get('[uig-highlight-backdrop][uig-show]').should(
+      'have.attr',
+      'uig-show',
+    );
 
     // Box
-    cy.get('[uig-elements-box]')
+    cy.get('[uig-highlight-box][uig-show]')
       .as('box')
       .then(($box) => {
         expect($box)
@@ -44,6 +47,6 @@ describe('highlight - Elements and Attributes', () => {
       });
     cy.get('@box')
       .parent()
-      .should('have.attr', 'uig-elements-backdrop');
+      .should('have.attr', 'uig-highlight-backdrop');
   });
 });

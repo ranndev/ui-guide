@@ -1,4 +1,4 @@
-@import '../../src/ui-guide-config';
+@import '../../src/ui-guide-variables';
 
 body {
   margin: 0;
@@ -19,8 +19,7 @@ body {
   border: 1px solid darken(aliceblue, 10%);
 }
 
-[#{attr('elements', 'backdrop')}][#{attr('markers', 'show')}]
-  [#{attr('elements', 'box')}] {
+[uig-highlight-box][uig-show] {
   animation-delay: 0s !important;
   animation-duration: 0s !important;
 }
