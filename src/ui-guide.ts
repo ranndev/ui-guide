@@ -48,7 +48,8 @@ export default class UIGuide {
     if (operation) {
       throw new Error(
         __DEV__
-          ? 'UIGuide currently has a pending highlight operation.\n' +
+          ? /* istanbul ignore next */
+            'UIGuide currently has a pending highlight operation.\n' +
             'Make sure that the operation is finished before you highlight again.'
           : 'Highlight operation still pending.',
       );

@@ -102,7 +102,8 @@ export default class UI {
     if (!popperRef) {
       throw new Error(
         __DEV__
-          ? `Popper reference is set to '${
+          ? /* istanbul ignore next */
+            `Popper reference is set to '${
               options.popperRef
             }' but highlight\'s ${
               options.popperRef === 'highlight-box' ? 'box' : 'target'
@@ -132,7 +133,8 @@ export default class UI {
     if (!this.target) {
       throw new Error(
         __DEV__
-          ? 'Unable to get the required elements of UpdateScheduler.\n' +
+          ? /* istanbul ignore next */
+            'Unable to get the required elements of UpdateScheduler.\n' +
             'Target element currently not available.'
           : 'Target element not available.',
       );
@@ -141,7 +143,8 @@ export default class UI {
     if (!this.highlight.backdrop || !this.highlight.box) {
       throw new Error(
         __DEV__
-          ? 'Unable to get the required elements of UpdateScheduler.\n' +
+          ? /* istanbul ignore next */
+            'Unable to get the required elements of UpdateScheduler.\n' +
             'Highlight elements currently not available.'
           : 'Highlight elements not available.',
       );
