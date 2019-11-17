@@ -85,7 +85,7 @@ export default class UIGuide {
           parent: target.offsetParent || document.body,
         });
 
-        const popup = options.popup ?? config.data.highlightOptions.popup;
+        const popup = options.popper ?? config.data.highlightOptions.popper;
 
         if (popup) {
           ui.setPopup({

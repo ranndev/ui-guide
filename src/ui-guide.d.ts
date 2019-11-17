@@ -8,8 +8,14 @@ export interface IDeferredPromise<ResolveValue = any> {
 
 export interface IEvents {
   onTargetElementQueried: (element: HTMLElement) => void;
-  onElementsReady: (elements: IHighlightElements, popper: Popper | null) => void;
-  onElementsUpdate: (elements: IHighlightElements, popper: Popper | null) => void;
+  onElementsReady: (
+    elements: IHighlightElements,
+    popper: Popper | null,
+  ) => void;
+  onElementsUpdate: (
+    elements: IHighlightElements,
+    popper: Popper | null,
+  ) => void;
 }
 
 export interface IHighlighted {
@@ -104,16 +110,18 @@ export default class UIGuide {
    * Configure the default highlight settings.
    * @param config New configuration.
    */
-  static configure(config: DeepPartial<IGlobalConfiguration>): void;
+  public static configure(config: DeepPartial<IGlobalConfiguration>): void;
   /**
    * Highlight an element from the page.
    * @param opts Highlight options.
    */
-  static highlight(opts: IHighlightOptions | Element | string): Promise<IHighlighted>;
+  public static highlight(
+    opts: IHighlightOptions | Element | string,
+  ): Promise<IHighlighted>;
   /**
    * Unhighlight the current highlighted element.
    */
-  static unhighlight(): void;
+  public static unhighlight(): void;
 }
 
 export {};

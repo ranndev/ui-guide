@@ -44,7 +44,7 @@ export default interface IHighlightOptions {
    * also be a popper options, which will use to override the
    * [default popper options](https://popper.js.org/popper-documentation.html#Popper.Defaults).
    */
-  popup?: boolean | PopperOptions;
+  popper?: boolean | PopperOptions;
   popperRef?: 'highlight-target' | 'highlight-box';
   /**
    * An object of events on where you can listen to.

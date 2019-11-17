@@ -29,8 +29,8 @@ export default class Config {
       autofocus: true,
       clickable: true,
       highlightUpdateDelay: 0,
+      popper: true,
       popperRef: 'highlight-target',
-      popup: true,
       wait: { delay: 0, max: Infinity },
     },
   };
