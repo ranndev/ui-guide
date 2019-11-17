@@ -103,6 +103,8 @@ export default class UIGuide {
         ui.togglePopup();
         updater.scheduleUpdate(
           events.onHighlightUpdate ?? config.data.events.onHighlightUpdate,
+          options.highlightUpdateDelay ??
+            config.data.highlightOptions.highlightUpdateDelay,
         );
 
         return {
@@ -123,8 +125,8 @@ export default class UIGuide {
   public static unhighlight() {
     updater.cancelCurrentScheduledUpdate();
     ui.toggleBodyAttr(false);
-    ui.unsetTarget();
     ui.unsetPopup();
     ui.unsetHighlight();
+    ui.unsetTarget();
   }
 }
