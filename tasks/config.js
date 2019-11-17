@@ -57,12 +57,4 @@ module.exports = {
       },
     },
   },
-  typings: {
-    dest: {
-      path: 'typings',
-    },
-    entry: {
-      glob: 'src/ui-guide.d.ts',
-    },
-  },
 };

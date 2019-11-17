@@ -1,7 +1,5 @@
 import IEvents from '../models/events';
-import IHighlightOptions, {
-  IHighlightWaitObject,
-} from '../models/highlight-options';
+import IHighlightOptions from '../models/highlight-options';
 import updateHighlight from '../utils/default-highlight-update-fn';
 
 export type ConfigHighlightOptions = Required<

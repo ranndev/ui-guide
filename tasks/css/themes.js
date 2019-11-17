@@ -19,7 +19,9 @@ function compile({ minified = false } = {}) {
     )
     .pipe(gulpif(minified, rename({ suffix: '.min' })))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest(path.resolve(config.base.dest, config.css.themes.dest.path)));
+    .pipe(
+      gulp.dest(path.resolve(config.base.dest, config.css.themes.dest.path)),
+    );
 }
 
 const taskName = utils.taskName(__filename);

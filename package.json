@@ -8,6 +8,7 @@
   "scripts": {
     "serve": "webpack-dev-server",
     "build": "gulp build",
+    "postbuild": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir \"./dist/typings\"",
     "start": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:serve\" \"cypress open\"",
     "test": "start-server-and-test serve 8080 run:cy",
     "run:cy": "cypress run --record false",
