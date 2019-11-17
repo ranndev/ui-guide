@@ -6,12 +6,12 @@
   "module": "./dist/js/esm/ui-guide.js",
   "typings": "./dist/typings/ui-guide.d.ts",
   "scripts": {
-    "start": "webpack-dev-server",
+    "serve": "webpack-dev-server",
     "build": "gulp build",
-    "e2e:dev": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:start\" \"cypress open\"",
-    "e2e:prod": "start-server-and-test start 8080 cy:run",
-    "cy:run": "cypress run --record false",
-    "lint": "tslint \"./(src|cypress)/**/*.ts\""
+    "start": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:serve\" \"cypress open\"",
+    "test": "start-server-and-test serve 8080 run:cy",
+    "run:cy": "cypress run --record false",
+    "lint": "tslint \"./cypress/**/*.ts\" \"./src/**/*.ts\" \"./typings/*.ts\""
   },
   "repository": {
     "type": "git",
