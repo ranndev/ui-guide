@@ -5,10 +5,8 @@ import IHighlightOptions, {
 import updateHighlight from '../utils/default-highlight-update-fn';
 
 export type ConfigHighlightOptions = Required<
-  Omit<IHighlightOptions, 'element' | 'context' | 'events' | 'wait'>
-> & {
-  wait: Required<IHighlightWaitObject>;
-};
+  Omit<IHighlightOptions, 'element' | 'context' | 'events'>
+>;
 
 type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
@@ -31,7 +29,7 @@ export default class Config {
       highlightUpdateDelay: 0,
       popper: true,
       popperRef: 'highlight-target',
-      wait: { delay: 0, max: Infinity },
+      wait: true,
     },
   };
 

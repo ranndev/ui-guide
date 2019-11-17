@@ -28,14 +28,9 @@ export default function queryWaitElement(
     return deferred;
   }
 
-  const delay =
-    typeof waitOptions === 'boolean'
-      ? config.highlightOptions.wait.delay
-      : waitOptions.delay ?? config.highlightOptions.wait.delay;
+  const delay = typeof waitOptions === 'boolean' ? 0 : waitOptions.delay ?? 0;
   const max =
-    typeof waitOptions === 'boolean'
-      ? config.highlightOptions.wait.max
-      : waitOptions.max ?? config.highlightOptions.wait.max;
+    typeof waitOptions === 'boolean' ? Infinity : waitOptions.max ?? Infinity;
   const selector = options.element;
 
   let elapsedTime = 0;

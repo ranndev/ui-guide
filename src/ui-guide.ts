@@ -85,11 +85,11 @@ export default class UIGuide {
           parent: target.offsetParent || document.body,
         });
 
-        const popup = options.popper ?? config.data.highlightOptions.popper;
+        const popper = options.popper ?? config.data.highlightOptions.popper;
 
-        if (popup) {
+        if (popper) {
           ui.setPopup({
-            popperOptions: typeof popup === 'boolean' ? undefined : popup,
+            popperOptions: typeof popper === 'boolean' ? undefined : popper,
             popperRef:
               options.popperRef ?? config.data.highlightOptions.popperRef,
           });
