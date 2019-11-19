@@ -10,17 +10,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - name: setup node
+        uses: actions/setup-node@v1
         with:
           node-version: 12
       - name: npm ci, build, and test
-      - run: |
+        run: |
           npm ci
           npm run lint
           npm run build
           npm run test
           npx codecov --file=./.nyc_output/out.json
-      - env:
+        env:
           CI: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
