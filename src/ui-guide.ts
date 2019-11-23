@@ -14,6 +14,9 @@ import queryWaitElement from './utils/query-wait-element';
 
 export interface IHighlighted {
   element: HTMLElement;
+  /**
+   * Invokes the `UIGuide.clear` internally.
+   */
   unhighlight: () => void;
 }
 
@@ -25,13 +28,20 @@ let operation: IDeferredPromise<HTMLElement> | null = null;
 
 export default class UIGuide {
   /**
-   * Configure the default highlight settings.
+   * Configure the global highlight settings.
+   *
+   * **Important**: *Updating the configuration while there's an on going*
+   * *highlight operation is prohibited.*
+   *
    * @param config New configuration.
    */
   public static configure(configuration: Parameters<Config['update']>[number]) {
     if (operation) {
       throw new Error(
-        'Updating of configuration is forbidden while there is a pending highlight operation.',
+        __DEV__
+          ? /* istanbul ignore next */
+            'Updating of configuration is forbidden while there is a pending highlight operation.'
+          : 'Highlight operation still pending.',
       );
     }
 
@@ -40,7 +50,20 @@ export default class UIGuide {
 
   /**
    * Highlight an element from the page.
-   * @param opts Highlight options.
+   *
+   * **Tip:** *It is possible to highlight a new element without*
+   * *`unhighlight`ing the current highlighted. Just make sure to wait your*
+   * *first highlight operation before you can highlight a new one, otherwise*
+   * *it will throw an error.*
+   *
+   * *Example:*
+   * ```javascript
+   * UIGuide.highlight('#target-1').then(() => {
+   *   UIGuide.highlight('#target-2')
+   * })
+   * ```
+   *
+   * @param opts Target element or highlight options for advanced highlighting.
    */
   public static highlight(
     opts: IHighlightOptions | Element | string,
@@ -99,7 +122,7 @@ export default class UIGuide {
 
         ui.toggleHightlight();
         ui.togglePopup();
-        updateScheduler.scheduleUpdate(
+        updateScheduler.schedUpdate(
           events.onHighlightUpdate ?? config.data.events.onHighlightUpdate,
           options.highlightUpdateDelay ??
             config.data.highlightOptions.highlightUpdateDelay,
@@ -108,7 +131,7 @@ export default class UIGuide {
         return {
           element: target,
           unhighlight: () => {
-            UIGuide.unhighlight();
+            UIGuide.clear();
           },
         };
       })
@@ -119,8 +142,20 @@ export default class UIGuide {
 
   /**
    * Unhighlight the current highlighted element.
+   *
+   * You usually invoke this function after you're done highlighting all your
+   * target elements.
+   *
+   * *Example:*
+   * ```typescript
+   * UIGuide.highlight('#first-target').then(() => {
+   *   UIGuide.highlight('#final-target').then((highlighted) => {
+   *     UIGuide.clear() // or highlighted.unhighlight()
+   *   })
+   * })
+   * ```
    */
-  public static unhighlight() {
+  public static clear() {
     updateScheduler.cancelCurrentScheduledUpdate();
     ui.toggleBodyAttr(false);
     ui.unsetPopup();
