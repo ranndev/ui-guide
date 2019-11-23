@@ -1,6 +1,7 @@
 @import '../src/ui-guide-variables';
 
-$theme-color: rgb(61, 199, 107) !default;
+$theme-color: #366 !default;
+$popup-arrow-size: 8px;
 $box-gutter-size: 8px !default;
 $box-border-size: 3px !default;
 
@@ -8,7 +9,8 @@ $box-border-size: 3px !default;
   box-sizing: content-box !important;
   border: $box-border-size solid darken($theme-color, 5%);
   border-radius: 0.25rem;
-  box-shadow: 0 0 0 999rem rgba(#000, 0.1), 0 0 2rem 0.5rem rgba(#000, 0.3);
+  box-shadow: 0 0 0 999rem rgba($theme-color, 0.1),
+    0 0 0.25rem rgba($theme-color, 0.3);
   opacity: 0;
   will-change: padding, margin, opacity;
 
@@ -28,5 +30,60 @@ $box-border-size: 3px !default;
         margin: -$box-gutter-size - $box-border-size;
       }
     }
+  }
+}
+
+span[x-arrow] {
+  position: absolute;
+  z-index: 2;
+  display: inline-block;
+  border: $popup-arrow-size solid transparent;
+
+  [uig-popup][x-placement='bottom'] & {
+    top: $box-gutter-size + $box-border-size;
+    border-bottom-color: darken($theme-color, 5%);
+  }
+
+  [uig-popup][x-placement='top'] & {
+    bottom: $box-gutter-size + $box-border-size;
+    border-top-color: darken($theme-color, 5%);
+  }
+
+  [uig-popup][x-placement='right'] & {
+    left: $box-gutter-size + $box-border-size;
+    border-right-color: darken($theme-color, 5%);
+  }
+
+  [uig-popup][x-placement='left'] & {
+    right: $box-gutter-size + $box-border-size;
+    border-left-color: darken($theme-color, 5%);
+  }
+}
+
+[uig-popup-card] {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem;
+  background-color: $theme-color;
+  color: #fff;
+  border-radius: 0.2rem;
+  overflow: hidden;
+
+  [uig-popup][x-placement='bottom'] & {
+    margin-top: ($popup-arrow-size * 2) + $box-gutter-size + $box-border-size;
+  }
+
+  [uig-popup][x-placement='top'] & {
+    margin-bottom: ($popup-arrow-size * 2) + $box-gutter-size + $box-border-size;
+  }
+
+  [uig-popup][x-placement='right'] & {
+    margin-left: ($popup-arrow-size * 2) + $box-gutter-size + $box-border-size;
+  }
+
+  [uig-popup][x-placement='left'] & {
+    margin-right: ($popup-arrow-size * 2) + $box-gutter-size + $box-border-size;
   }
 }

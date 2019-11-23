@@ -112,6 +112,8 @@ export default class UI {
       );
     }
 
+    document.body.appendChild(this.popup);
+
     this.popper?.destroy();
     this.popper = new Popper(popperRef, this.popup, options.popperOptions);
   }
