@@ -8,13 +8,13 @@ export default function queryWaitElement(
 ): IDeferredPromise<HTMLElement> {
   const deferred: IDeferredPromise<HTMLElement> = defer();
 
-  if (options.element instanceof Element) {
-    deferred.resolve(options.element as HTMLElement);
+  if (options.target instanceof Element) {
+    deferred.resolve(options.target as HTMLElement);
     return deferred;
   }
 
   const context = options.context || document;
-  let element = context.querySelector<HTMLElement>(options.element);
+  let element = context.querySelector<HTMLElement>(options.target);
 
   if (element) {
     deferred.resolve(element);
@@ -31,7 +31,7 @@ export default function queryWaitElement(
   const delay = typeof waitOptions === 'boolean' ? 0 : waitOptions.delay ?? 0;
   const max =
     typeof waitOptions === 'boolean' ? Infinity : waitOptions.max ?? Infinity;
-  const selector = options.element;
+  const selector = options.target;
 
   let elapsedTime = 0;
   const interval = window.setInterval(() => {

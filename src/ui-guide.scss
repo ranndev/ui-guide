@@ -38,3 +38,7 @@ body[uig-on] {
 [uig-target] {
   z-index: $target-zindex !important;
 }
+
+[uig-popup] {
+  z-index: $popup-zindex;
+}

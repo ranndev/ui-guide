@@ -2,7 +2,7 @@ import UIGuide from '../../src/ui-guide';
 
 describe('unhighlight', () => {
   let uiguide: typeof UIGuide;
-  let unhighlight: typeof UIGuide['unhighlight'];
+  let unhighlight: typeof UIGuide['clear'];
 
   before(() => {
     cy.visit('/').then((contentWindow) => {

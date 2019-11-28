@@ -3,7 +3,7 @@ import IHighlightOptions from '../models/highlight-options';
 import updateHighlight from '../utils/default-highlight-update-fn';
 
 export type ConfigHighlightOptions = Required<
-  Omit<IHighlightOptions, 'element' | 'context' | 'events'>
+  Omit<IHighlightOptions, 'target' | 'context' | 'events'>
 >;
 
 export type DeepPartial<T> = {

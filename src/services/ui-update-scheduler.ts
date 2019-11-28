@@ -18,7 +18,7 @@ export default class UIUpdateScheduler {
 
   constructor(private ui: UI) {}
 
-  public scheduleUpdate(updateFn: UpdateFn, delay: number) {
+  public schedUpdate(updateFn: UpdateFn, delay: number) {
     const elements = this.ui.getUpdateSchedulerRequiredElements();
     this.cancelCurrentScheduledUpdate();
     this.update(elements, updateFn, delay);

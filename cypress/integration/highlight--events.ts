@@ -24,12 +24,12 @@ describe('highlight - Events', () => {
     });
 
     uiguide.highlight({
-      element: '[data-testid="target-1"]',
       events: {
         onElementsReady,
         onHighlightUpdate,
         onTargetFound,
       },
+      target: '[data-testid="target-1"]',
     });
 
     cy.get('[uig-highlight-backdrop][uig-show]')

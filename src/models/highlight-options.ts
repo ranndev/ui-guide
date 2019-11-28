@@ -3,14 +3,13 @@ import IEvents from './events';
 
 export interface IHighlightWaitObject {
   /**
-   * A delay in milliseconds before it will try to find the target element
-   * again. Unnecessary when `wait` is `false`. Default value is `150`
-   * milliseconds.
+   * A delay (in milliseconds) before it will try to search for the target
+   * element again. Default value is `150`.
    */
   delay?: number;
   /**
-   * A maximum wait time before it give up on searching for target element.
-   * An error will be thrown when the set `maxWait` reached. Default value is
+   * A maximum wait time before it give up on searching for the target element.
+   * An error will be thrown when the set `max` reached. Default value is
    * `Infinity`.
    */
   max?: number;
@@ -18,25 +17,25 @@ export interface IHighlightWaitObject {
 
 export default interface IHighlightOptions {
   /**
-   * The target element or the selector for the target element to be highlighted.
+   * The target element or the selector for the target element.
    */
-  element: string | Element;
+  target: string | Element;
   /**
-   * The context element on where to find the target element. It will use the
-   * `document` by default.
+   * The context element on where to find the target element. It will be the
+   * `document` if not provided.
    */
   context?: Element;
   /**
-   * Option wether the target element should be clickable. `true` by default.
+   * Option on wether the target element should be clickable. `true` by default.
    */
   clickable?: boolean;
   /**
-   * If `clickable` option seems not work, Enabling this option might help.
+   * Automatically set the focus on the target element. Enabled by default.
    */
   autofocus?: boolean;
   /**
-   * If `false`, It will throw an error when target element is not found on the
-   * first try.
+   * If `false`, It will throw an error immediately once searching for the
+   * target element fail on the first try.
    */
   wait?: boolean | IHighlightWaitObject;
   /**
@@ -45,10 +44,21 @@ export default interface IHighlightOptions {
    * [default popper options](https://popper.js.org/popper-documentation.html#Popper.Defaults).
    */
   popper?: boolean | PopperOptions;
+  /**
+   * When this is set to `'highlight-box'`, the highlight's element
+   * (`[uig-highlight-box]`) will be used as the popper reference element.
+   * It will be the highlighted element otherwise.
+   */
   popperRef?: 'highlight-target' | 'highlight-box';
   /**
-   * An object of events on where you can listen to.
+   * Options for listening on events.
    */
   events?: Partial<IEvents>;
+  /**
+   * Overrides the update delay for the highlight element.
+   *
+   * By default, the position and size of highlight element were updated every
+   * `0` miliseconds.
+   */
   highlightUpdateDelay?: number;
 }
