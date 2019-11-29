@@ -108,6 +108,8 @@ export default class UIGuide {
 
         const popper = options.popper ?? config.data.highlightOptions.popper;
 
+        ui.unsetPopup();
+
         if (popper) {
           ui.setPopup({
             popperOptions: typeof popper === 'boolean' ? undefined : popper,

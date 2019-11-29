@@ -16,14 +16,28 @@ describe('highlight - Popup', () => {
           if (!elements.popup) return;
 
           elements.popup.innerHTML = `
-          <span x-arrow></span>
-          <div uig-popup-card>Click Me!</div>
-          `;
+            <span x-arrow></span>
+            <div uig-popup-card>Click Me!</div>
+            `;
         },
       },
+      popper: { placement: 'right' },
       target: '[data-testid="target-1"]',
     });
 
     cy.contains('Click Me!');
+  });
+
+  it('should be able to disable the popup', () => {
+    cy.wrap(
+      uiguide.highlight({
+        popper: false,
+        target: '[data-testid="target-2"]',
+      }),
+    ).then(() => {
+      cy.document().then((document) => {
+        expect(document.querySelector('[uig-popup]')).to.be.null;
+      });
+    });
   });
 });

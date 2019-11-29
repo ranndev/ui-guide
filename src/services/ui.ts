@@ -90,9 +90,6 @@ export default class UI {
     popperRef: 'highlight-box' | 'highlight-target';
     popperOptions?: PopperOptions;
   }) {
-    // Prevent reusing of popup element to avoid issue on popper.js
-    this.popup?.parentNode?.removeChild(this.popup);
-
     this.popup = document.createElement('div');
     this.toggleAttrs(this.popup, { popup: true });
 
