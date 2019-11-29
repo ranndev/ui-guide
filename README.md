@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  <strong>Help end users quickly get started from your web applications :ok_woman::ok_man:</strong>
+  <strong>A programmatic way for making highlight guide :high_brightness:</strong>
 </p>
 
 <p align="center">
@@ -11,7 +11,7 @@
     <img src="https://github.com/ranndev/ui-guide/workflows/build/badge.svg?branch=develop" alt="Build Status">
   </a>
   <a href="https://greenkeeper.io">
-    <img src="https://badges.greenkeeper.io/rannie-peralta/ui-guide.svg" alt="Greenkeeper Status">
+    <img src="https://badges.greenkeeper.io/ranndev/ui-guide.svg" alt="Greenkeeper Status">
   </a>
   <a href="https://codecov.io/gh/ranndev/ui-guide">
     <img src="https://codecov.io/gh/ranndev/ui-guide/branch/develop/graph/badge.svg" alt="codecov - Code Coverage">
@@ -19,8 +19,8 @@
   <a href="https://snyk.io/test/github/ranndev/ui-guide">
     <img src="https://img.shields.io/snyk/vulnerabilities/github/ranndev/ui-guide" alt="Synk - Vulnerabilities">
   </a>
-  <a href="https://www.codefactor.io/repository/github/rannie-peralta/ui-guide">
-    <img src="https://img.shields.io/codefactor/grade/github/rannie-peralta/ui-guide/develop" alt="CodeFactor - Grade">
+  <a href="https://www.codefactor.io/repository/github/ranndev/ui-guide">
+    <img src="https://img.shields.io/codefactor/grade/github/ranndev/ui-guide/develop" alt="CodeFactor - Grade">
   </a>
 </p>
 
