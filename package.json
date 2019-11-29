@@ -9,9 +9,9 @@
     "serve": "webpack-dev-server",
     "build": "gulp build",
     "postbuild": "tsc --emitDeclarationOnly --declaration --declarationMap --declarationDir \"./dist/typings\"",
-    "start": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:serve\" \"cypress open\"",
+    "test:dev": "concurrently --names Server,Cypress --kill-others-on-fail \"npm:serve\" \"cypress open\"",
     "test": "start-server-and-test serve 8080 run:cy",
-    "run:cy": "cypress run --record false",
+    "run:cy": "cypress run",
     "lint": "tslint \"./cypress/**/*.ts\" \"./src/**/*.ts\" \"./typings/*.ts\""
   },
   "repository": {
@@ -56,12 +56,14 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^3.1.0",
     "istanbul-lib-coverage": "^2.0.5",
     "mini-css-extract-plugin": "^0.8.0",
     "node-sass": "^4.13.0",
     "nyc": "^14.1.1",
     "popper.js": "^1.16.0",
     "prettier": "^1.19.1",
+    "pretty-quick": "^2.0.1",
     "rollup": "^1.27.5",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
@@ -86,5 +88,9 @@
     "extends": "@istanbuljs/nyc-config-typescript",
     "all": true
   },
-  "dependencies": {}
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
 }
