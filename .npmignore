@@ -15,7 +15,6 @@ CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 cypress.json
 gulpfile.js
-logo.svg
 tsconfig.json
 tslint.json
 webpack.config.js
