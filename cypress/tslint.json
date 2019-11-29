@@ -1,0 +1,8 @@
+{
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-config-standard", "tslint-config-prettier"],
+  "rules": {
+    "no-floating-promises": false,
+    "no-unused-expression": false
+  }
+}

@@ -1,0 +1,7 @@
+.nyc_output
+.ts_cache
+coverage
+cypress/screenshots
+cypress/videos
+node_modules
+dist

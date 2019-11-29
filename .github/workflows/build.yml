@@ -1,0 +1,31 @@
+name: build
+
+on:
+  push:
+    branches-ignore:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Cypress Run
+        uses: cypress-io/github-action@v1
+        with:
+          build: npm run build
+          start: npm run serve
+          wait-on: 'http://localhost:8080'
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      - name: Lint
+        run: npm run lint
+      - name: Codecov Upload
+        run: npx codecov --file=./.nyc_output/out.json
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

@@ -1,0 +1,7 @@
+{
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "types": ["cypress", "node"]
+  },
+  "include": ["integration", "typings", "../typings"]
+}

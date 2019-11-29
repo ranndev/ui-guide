@@ -1,0 +1,44 @@
+@import './ui-guide-variables';
+
+body[uig-on] {
+  * {
+    pointer-events: none !important;
+  }
+
+  [uig-highlight-backdrop],
+  [uig-popup],
+  [uig-clickable] {
+    pointer-events: all !important;
+
+    * {
+      pointer-events: all !important;
+    }
+  }
+}
+
+[uig-highlight-backdrop] {
+  position: fixed;
+  z-index: $backdrop-zindex;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+[uig-highlight-box] {
+  position: absolute;
+  display: inline-block;
+  will-change: left, top, width, height;
+}
+
+[uig-non-positioned] {
+  position: relative !important;
+}
+
+[uig-target] {
+  z-index: $target-zindex !important;
+}
+
+[uig-popup] {
+  z-index: $popup-zindex;
+}
