@@ -90,9 +90,6 @@ export default class UI {
     popperRef: 'highlight-box' | 'highlight-target';
     popperOptions?: PopperOptions;
   }) {
-    // NOTE: Prevent reusing of popup element to avoid issue on popper.js
-    this.popup?.parentNode?.removeChild(this.popup);
-
     this.popup = document.createElement('div');
     this.toggleAttrs(this.popup, { popup: true });
 
@@ -111,6 +108,8 @@ export default class UI {
           : 'Popper reference not available.',
       );
     }
+
+    document.body.appendChild(this.popup);
 
     this.popper?.destroy();
     this.popper = new Popper(popperRef, this.popup, options.popperOptions);
@@ -158,6 +157,17 @@ export default class UI {
     };
   }
 
+  /**
+   * Toggles multiple attributes on element.
+   *
+   * **Usage:**
+   * ```typescript
+   * toggleAttrs(element, {
+   *   'data-show': true, // Sets a data-show attribute to element
+   *   'data-hide': false, // Removes data-hide attribute to element
+   * })
+   * ```
+   */
   private toggleAttrs(
     element: HTMLElement,
     attrsObject: { [name: string]: boolean },
