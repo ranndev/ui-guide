@@ -1,7 +1,7 @@
 .github
 .nyc_output
 .ts_cache
-.vs_code
+.vscode
 coverage
 cypress
 node_modules
@@ -12,6 +12,7 @@ typings
 .prettierrc
 babelrc.js
 CODE_OF_CONDUCT.md
+CONTRIBUTING.md
 cypress.json
 gulpfile.js
 logo.svg
