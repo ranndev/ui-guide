@@ -3,30 +3,30 @@
 </h1>
 
 <p align="center">
-  <strong>A programmatic way for making highlight guide :high_brightness:</strong>
+  <strong>A programmatic way of making highlight guide :high_brightness:</strong>
 </p>
 
 <p align="center">
   <a href="https://github.com/ranndev/ui-guide/actions?query=workflow%3Abuild">
-    <img src="https://github.com/ranndev/ui-guide/workflows/build/badge.svg?branch=develop" alt="Build Status">
+    <img src="https://github.com/ranndev/ui-guide/workflows/build/badge.svg?branch=master" alt="Build Status">
   </a>
   <a href="https://greenkeeper.io">
     <img src="https://badges.greenkeeper.io/ranndev/ui-guide.svg" alt="Greenkeeper Status">
   </a>
   <a href="https://codecov.io/gh/ranndev/ui-guide">
-    <img src="https://codecov.io/gh/ranndev/ui-guide/branch/develop/graph/badge.svg" alt="codecov - Code Coverage">
+    <img src="https://codecov.io/gh/ranndev/ui-guide/branch/master/graph/badge.svg" alt="codecov - Code Coverage">
   </a>
   <a href="https://snyk.io/test/github/ranndev/ui-guide">
     <img src="https://img.shields.io/snyk/vulnerabilities/github/ranndev/ui-guide" alt="Synk - Vulnerabilities">
   </a>
   <a href="https://www.codefactor.io/repository/github/ranndev/ui-guide">
-    <img src="https://img.shields.io/codefactor/grade/github/ranndev/ui-guide/develop" alt="CodeFactor - Grade">
+    <img src="https://img.shields.io/codefactor/grade/github/ranndev/ui-guide/master" alt="CodeFactor - Grade">
   </a>
 </p>
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/ranndev/ui-guide/master/images/logo.png" align="center" width="250">
-</div>
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ranndev/ui-guide/master/images/logo.png" width="250">
+</p>
 
 ### Installation
 
@@ -35,7 +35,7 @@
 | npm    | `npm install @ranndev/ui-guide --save` |
 | yarn   | `yarn add @ranndev/ui-guide`           |
 
-_Note: [Popper.js](https://github.com/FezVrasta/popper.js) is a peer dependency of this package, so you should [install it](https://github.com/FezVrasta/popper.js#installation) too._
+_Note: [Popper.js](https://github.com/FezVrasta/popper.js) is a peer dependency of this package, so you must [install it](https://github.com/FezVrasta/popper.js#installation) too._
 
 ### Setup
 

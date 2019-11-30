@@ -44,7 +44,7 @@ function transpile({ minified = false } = {}) {
         format: 'umd',
         name: config.js.rollup.browserName,
         sourcemap: true,
-        globals: { 'popper.js': 'Poppoer' },
+        globals: { 'popper.js': 'Popper' },
       }),
     );
 }
