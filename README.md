@@ -25,7 +25,7 @@
 </p>
 
 <div align="center">
-  <img src="./logo.svg" align="center" width="250">
+  <img src="images/logo.svg" align="center" width="250">
 </div>
 
 ### Installation
