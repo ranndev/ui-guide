@@ -25,7 +25,7 @@
 </p>
 
 <div align="center">
-  <img src="images/logo.svg" align="center" width="250">
+  <img src="https://raw.githubusercontent.com/ranndev/ui-guide/master/images/logo.png" align="center" width="250">
 </div>
 
 ### Installation
