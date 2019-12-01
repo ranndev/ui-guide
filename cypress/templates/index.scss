@@ -19,7 +19,10 @@ body {
   border: 1px solid darken(aliceblue, 10%);
 }
 
-[uig-highlight-box][uig-show] {
+// Disabled highlight & popup animation for tests.
+
+[uig-highlight-box][uig-show],
+[uig-popup-wrapper] {
   animation-delay: 0s !important;
   animation-duration: 0s !important;
 }
