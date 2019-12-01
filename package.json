@@ -1,7 +1,7 @@
 {
   "name": "@ranndev/ui-guide",
   "version": "0.1.6",
-  "description": "Your UI guide helper for your application",
+  "description": "A programmatic way of making highlight guide",
   "main": "./dist/js/cjs/index.js",
   "module": "./dist/js/esm/ui-guide.js",
   "typings": "./dist/typings/ui-guide.d.ts",
