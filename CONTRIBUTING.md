@@ -6,6 +6,8 @@ Thanks for your interest in UIGuide! You are very welcome to contribute.
 
 If you find a bug, please, try to isolate the specific case and provide a fiddle on CodePen or JSFiddle to make it easy to reproduce the problem and help others finding a solution.
 
+You can use [this CodePen](https://codepen.io/ranndev/pen/LYEPgmL) which already includes ui-guide & popper.js.
+
 Feature requests are welcome!
 
 ## Setup
