@@ -16,9 +16,10 @@ describe('highlight - Popup', () => {
           if (!elements.popup) return;
 
           elements.popup.innerHTML = `
-            <span x-arrow></span>
-            <div uig-popup-card>Click Me!</div>
-            `;
+            <div uig-popup-wrapper>
+              <span x-arrow></span>
+              <div uig-popup-card>Click Me!</div>
+            </div>`;
         },
       },
       popper: { placement: 'right' },
