@@ -28,14 +28,23 @@
   <img src="https://raw.githubusercontent.com/ranndev/ui-guide/master/images/logo.png" width="250">
 </p>
 
+### Examples
+
+- CodePen - https://codepen.io/ranndev/pen/oNgvwQV
+
 ### Installation
 
-| Source | Command                                |
-| :----- | :------------------------------------- |
-| npm    | `npm install @ranndev/ui-guide --save` |
-| yarn   | `yarn add @ranndev/ui-guide`           |
+```bash
+# Using npm
+npm install @ranndev/ui-guide --save
+```
 
-_Note: [Popper.js](https://github.com/FezVrasta/popper.js) is a peer dependency of this package, so you must [install it](https://github.com/FezVrasta/popper.js#installation) too._
+```bash
+# Using Yarn
+yarn add @ranndev/ui-guide
+```
+
+_Note: [Popper.js](https://github.com/FezVrasta/popper.js) is a peer dependency of this package. Make sure to [install it](https://github.com/FezVrasta/popper.js#installation) too._
 
 ### Setup
 
@@ -49,10 +58,6 @@ There are 2 required styles that must be included into your app.
 #### Scripts
 
 If you're going to import the package using `<script>` tag, use UMD (Universal Module Definition).
-
-### Examples
-
-- Codepen example - https://codepen.io/ranndev/pen/oNgvwQV
 
 ### Usage
 
