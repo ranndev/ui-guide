@@ -44,11 +44,15 @@ _Note: [Popper.js](https://github.com/FezVrasta/popper.js) is a peer dependency 
 There are 2 required styles that must be included into your app.
 
 1. Base style - Includes the base styles for UIGuide elements. This is located from `/dist/css/ui-guide(.min).css` or `/dist/scss/ui-guide.scss` if you're using [Scss](https://sass-lang.com/).
-2. Theme style - Includes the styles that gives color and animation to UIGuide element. This is located from `/dist/css/themes/*` or `/dist/scss/themes/*` if you're using [Scss](https://sass-lang.com/).
+2. Theme style - Includes the styles that gives color and animation to UIGuide elements. This is located from `/dist/css/themes/*` or `/dist/scss/themes/*` if you're using [Scss](https://sass-lang.com/).
 
 #### Scripts
 
 If you're going to import the package using `<script>` tag, use UMD (Universal Module Definition).
+
+### Examples
+
+- Codepen example - https://codepen.io/ranndev/pen/oNgvwQV
 
 ### Usage
 
