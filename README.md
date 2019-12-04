@@ -22,6 +22,9 @@
   <a href="https://www.codefactor.io/repository/github/ranndev/ui-guide">
     <img src="https://img.shields.io/codefactor/grade/github/ranndev/ui-guide/master" alt="CodeFactor - Grade">
   </a>
+  <a href="https://dependabot.com">
+    <img src="https://api.dependabot.com/badges/status?host=github&repo=ranndev/ui-guide" alt="Dependabot Status">
+  </a>
 </p>
 
 <p align="center">
