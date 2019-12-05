@@ -10,9 +10,6 @@
   <a href="https://github.com/ranndev/ui-guide/actions?query=workflow%3Abuild">
     <img src="https://github.com/ranndev/ui-guide/workflows/build/badge.svg?branch=master" alt="Build Status">
   </a>
-  <a href="https://greenkeeper.io">
-    <img src="https://badges.greenkeeper.io/ranndev/ui-guide.svg" alt="Greenkeeper Status">
-  </a>
   <a href="https://codecov.io/gh/ranndev/ui-guide">
     <img src="https://codecov.io/gh/ranndev/ui-guide/branch/master/graph/badge.svg" alt="codecov - Code Coverage">
   </a>
