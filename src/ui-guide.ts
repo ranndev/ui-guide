@@ -20,13 +20,12 @@ export interface IHighlighted {
   unhighlight: () => void;
 }
 
-const config = new Config();
-const ui = new UI();
-const updateScheduler = new UIUpdateScheduler(ui);
+export class UIGuide {
+  private $config = new Config();
+  private $ui = new UI();
+  private $updateScheduler = new UIUpdateScheduler(this.$ui);
+  private $operation: IDeferredPromise<HTMLElement> | null = null;
 
-let operation: IDeferredPromise<HTMLElement> | null = null;
-
-export default class UIGuide {
   /**
    * Configure the global highlight settings.
    *
@@ -35,8 +34,8 @@ export default class UIGuide {
    *
    * @param config New configuration.
    */
-  public static configure(configuration: Parameters<Config['update']>[number]) {
-    if (operation) {
+  public configure(configuration: Parameters<Config['update']>[number]) {
+    if (this.$operation) {
       throw new Error(
         __DEV__
           ? /* istanbul ignore next */
@@ -45,7 +44,7 @@ export default class UIGuide {
       );
     }
 
-    config.update(configuration);
+    this.$config.update(configuration);
   }
 
   /**
@@ -65,10 +64,10 @@ export default class UIGuide {
    *
    * @param opts Target element or highlight options for advanced highlighting.
    */
-  public static highlight(
+  public highlight(
     opts: IHighlightOptions | Element | string,
   ): Promise<IHighlighted> {
-    if (operation) {
+    if (this.$operation) {
       throw new Error(
         __DEV__
           ? /* istanbul ignore next */
@@ -78,8 +77,8 @@ export default class UIGuide {
       );
     }
 
-    ui.sanitizeHighlight();
-    ui.sanitizeTarget();
+    this.$ui.sanitizeHighlight();
+    this.$ui.sanitizeTarget();
 
     const options =
       opts instanceof Element || typeof opts === 'string'
@@ -87,58 +86,61 @@ export default class UIGuide {
         : opts;
     const events = options.events || {};
 
-    operation = queryWaitElement(config.data, options);
+    this.$operation = queryWaitElement(this.$config.data, options);
 
-    return operation.promise
+    return this.$operation.promise
       .then((target) => {
-        ui.toggleBodyAttr();
-        ui.setTarget(target, {
+        this.$ui.toggleBodyAttr();
+        this.$ui.setTarget(target, {
           clickable:
-            options.clickable ?? config.data.highlightOptions.clickable,
-          focus: options.autofocus ?? config.data.highlightOptions.autofocus,
+            options.clickable ?? this.$config.data.highlightOptions.clickable,
+          focus:
+            options.autofocus ?? this.$config.data.highlightOptions.autofocus,
           positioned: isElementPositioned(target),
         });
 
         events.onTargetFound?.(target);
-        config.data.events.onTargetFound?.(target);
+        this.$config.data.events.onTargetFound?.(target);
 
-        ui.setHightlight({
+        this.$ui.setHightlight({
           parent: target.offsetParent || document.body,
         });
 
-        const popper = options.popper ?? config.data.highlightOptions.popper;
+        const popper =
+          options.popper ?? this.$config.data.highlightOptions.popper;
 
-        ui.unsetPopup();
+        this.$ui.unsetPopup();
 
         if (popper) {
-          ui.setPopup({
+          this.$ui.setPopup({
             popperOptions: typeof popper === 'boolean' ? undefined : popper,
             popperRef:
-              options.popperRef ?? config.data.highlightOptions.popperRef,
+              options.popperRef ?? this.$config.data.highlightOptions.popperRef,
           });
         }
 
-        const requiredElements = ui.getUpdateSchedulerRequiredElements();
+        const requiredElements = this.$ui.getUpdateSchedulerRequiredElements();
         events.onElementsReady?.(requiredElements);
-        config.data.events.onElementsReady?.(requiredElements);
+        this.$config.data.events.onElementsReady?.(requiredElements);
 
-        ui.toggleHightlight();
-        ui.togglePopup();
-        updateScheduler.schedUpdate(
-          events.onHighlightUpdate ?? config.data.events.onHighlightUpdate,
+        this.$ui.toggleHightlight();
+        this.$ui.togglePopup();
+        this.$updateScheduler.schedUpdate(
+          events.onHighlightUpdate ??
+            this.$config.data.events.onHighlightUpdate,
           options.highlightUpdateDelay ??
-            config.data.highlightOptions.highlightUpdateDelay,
+            this.$config.data.highlightOptions.highlightUpdateDelay,
         );
 
         return {
           element: target,
           unhighlight: () => {
-            UIGuide.clear();
+            this.clear();
           },
         };
       })
       .finally(() => {
-        operation = null;
+        this.$operation = null;
       });
   }
 
@@ -157,11 +159,14 @@ export default class UIGuide {
    * })
    * ```
    */
-  public static clear() {
-    updateScheduler.cancelCurrentScheduledUpdate();
-    ui.toggleBodyAttr(false);
-    ui.unsetPopup();
-    ui.unsetHighlight();
-    ui.unsetTarget();
+  public clear() {
+    this.$updateScheduler.cancelCurrentScheduledUpdate();
+    this.$ui.toggleBodyAttr(false);
+    this.$ui.unsetPopup();
+    this.$ui.unsetHighlight();
+    this.$ui.unsetTarget();
   }
 }
+
+const uiguide = new UIGuide();
+export default uiguide;
