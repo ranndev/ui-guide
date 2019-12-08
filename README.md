@@ -104,11 +104,9 @@ Highlight with popup
 UIGuide.highlight({
   element: '#target-element',
   events: {
-    onElementsReady: (elements) => {
-      if (elements.popup) {
-        // Do whatever you want to popup element
-        elements.popup.innerHTML = '<p>Click Me!</p>';
-      }
+    onPopupReady: (popup) => {
+      // Do whatever you want to popup element
+      popup.element.innerHTML = '<p>Click Me!</p>';
     },
   },
 });
@@ -160,14 +158,23 @@ UIGuide.configure({
   events: {
     // This event will fire once the target element successfully queried.
     onTargetFound: (target) => {},
-    // This will fire when the target, highlight, and popup (if available)
-    // elements are ready.
-    onElementsReady: (elements) => {},
+    // This will fire when the highlight's elements ([uig-highlight-backdrop]
+    // and [uig-highlight-box]) are created and appended to the DOM.
+    onHighlightReady: (highlight) => {},
+    // This event will fire when popup element and the popper instance is are ready.
+    // Note: If the `popper` option disabled or has a value of `false`, do not
+    // expect this to trigger.
+    onPopupReady: (popup) => {},
     // This will fire everytime the highlight's element request an update.
     // Important! Listening on this event will bring you the full
     // responsibility of updating the highlight & popup elements. Make sure to
     // implement this function as performant as possible.
     onHighlightUpdate: (elements) => {},
+    // This will fire everytime the popup's element request an update.
+    // By default, this is just calling `popper.update()` internally.
+    // Important: Listening on this event will bring you the full
+    // responsibility of updating the popup elements.
+    onPopupUpdate: (popup) => {};
   },
   // Overrides the update delay for the highlight element.
   // By default, the position and size of highlight element were updated every

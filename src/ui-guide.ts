@@ -2,12 +2,13 @@ import IHighlightOptions from './models/highlight-options';
 
 // Services
 
-import Config from './services/config';
-import UI from './services/ui';
-import UIUpdateScheduler from './services/ui-update-scheduler';
+import Settings from './services/settings';
+import View from './services/view';
+import ViewUpdateScheduler from './services/view-update-scheduler';
 
 // Utilities
 
+import Popper from 'popper.js';
 import { IDeferredPromise } from './utils/defer';
 import isElementPositioned from './utils/is-element-positioned';
 import queryWaitElement from './utils/query-wait-element';
@@ -21,10 +22,18 @@ export interface IHighlighted {
 }
 
 export class UIGuide {
-  private $config = new Config();
-  private $ui = new UI();
-  private $updateScheduler = new UIUpdateScheduler(this.$ui);
+  private $settings = new Settings();
+  private $view = new View();
   private $operation: IDeferredPromise<HTMLElement> | null = null;
+  private $highlightVUS: ViewUpdateScheduler<{
+    target: HTMLElement;
+    backdrop: HTMLElement;
+    box: HTMLElement;
+  }> = new ViewUpdateScheduler();
+  private $popupVUS: ViewUpdateScheduler<{
+    element: HTMLElement;
+    popper: Popper;
+  }> = new ViewUpdateScheduler();
 
   /**
    * Configure the global highlight settings.
@@ -34,7 +43,7 @@ export class UIGuide {
    *
    * @param config New configuration.
    */
-  public configure(configuration: Parameters<Config['update']>[number]) {
+  public configure(configuration: Parameters<Settings['update']>[number]) {
     if (this.$operation) {
       throw new Error(
         __DEV__
@@ -44,7 +53,7 @@ export class UIGuide {
       );
     }
 
-    this.$config.update(configuration);
+    this.$settings.update(configuration);
   }
 
   /**
@@ -77,8 +86,8 @@ export class UIGuide {
       );
     }
 
-    this.$ui.sanitizeHighlight();
-    this.$ui.sanitizeTarget();
+    this.$view.highlight.sanitize();
+    this.$view.target.sanitize();
 
     const options =
       opts instanceof Element || typeof opts === 'string'
@@ -86,51 +95,63 @@ export class UIGuide {
         : opts;
     const events = options.events || {};
 
-    this.$operation = queryWaitElement(this.$config.data, options);
+    this.$operation = queryWaitElement(this.$settings.data, options);
 
     return this.$operation.promise
       .then((target) => {
-        this.$ui.toggleBodyAttr();
-        this.$ui.setTarget(target, {
+        this.$view.toggle();
+        this.$view.target.set(target, {
           clickable:
-            options.clickable ?? this.$config.data.highlightOptions.clickable,
+            options.clickable ?? this.$settings.data.highlightOptions.clickable,
           focus:
-            options.autofocus ?? this.$config.data.highlightOptions.autofocus,
+            options.autofocus ?? this.$settings.data.highlightOptions.autofocus,
           positioned: isElementPositioned(target),
         });
 
         events.onTargetFound?.(target);
-        this.$config.data.events.onTargetFound?.(target);
+        this.$settings.data.events.onTargetFound?.(target);
 
-        this.$ui.setHightlight({
+        const highlight = this.$view.highlight.set({
           parent: target.offsetParent || document.body,
         });
 
-        const popper =
-          options.popper ?? this.$config.data.highlightOptions.popper;
+        events.onHighlightReady?.(highlight);
+        this.$settings.data.events.onHighlightReady?.(highlight);
+        this.$view.highlight.toggle();
+        this.$highlightVUS.schedUpdate(
+          events.onHighlightUpdate ??
+            this.$settings.data.events.onHighlightUpdate,
+          { ...highlight, target },
+          options.highlightUpdateDelay ??
+            this.$settings.data.highlightOptions.highlightUpdateDelay,
+        );
 
-        this.$ui.unsetPopup();
+        const popper =
+          options.popper ?? this.$settings.data.highlightOptions.popper;
+
+        this.$view.popup.unset();
 
         if (popper) {
-          this.$ui.setPopup({
-            popperOptions: typeof popper === 'boolean' ? undefined : popper,
-            popperRef:
-              options.popperRef ?? this.$config.data.highlightOptions.popperRef,
+          const popup = this.$view.popup.set({
+            options: typeof popper === 'boolean' ? undefined : popper,
+            ref:
+              (options.popperRef ??
+                this.$settings.data.highlightOptions.popperRef) ===
+              'highlight-box'
+                ? highlight.box
+                : target,
           });
+
+          events.onPopupReady?.(popup);
+          this.$settings.data.events.onPopupReady?.(popup);
+          this.$view.popup.toggle();
+          this.$popupVUS.schedUpdate(
+            events.onPopupUpdate ?? this.$settings.data.events.onPopupUpdate,
+            popup,
+            options.popupUpdateDelay ??
+              this.$settings.data.highlightOptions.highlightUpdateDelay,
+          );
         }
-
-        const requiredElements = this.$ui.getUpdateSchedulerRequiredElements();
-        events.onElementsReady?.(requiredElements);
-        this.$config.data.events.onElementsReady?.(requiredElements);
-
-        this.$ui.toggleHightlight();
-        this.$ui.togglePopup();
-        this.$updateScheduler.schedUpdate(
-          events.onHighlightUpdate ??
-            this.$config.data.events.onHighlightUpdate,
-          options.highlightUpdateDelay ??
-            this.$config.data.highlightOptions.highlightUpdateDelay,
-        );
 
         return {
           element: target,
@@ -160,11 +181,12 @@ export class UIGuide {
    * ```
    */
   public clear() {
-    this.$updateScheduler.cancelCurrentScheduledUpdate();
-    this.$ui.toggleBodyAttr(false);
-    this.$ui.unsetPopup();
-    this.$ui.unsetHighlight();
-    this.$ui.unsetTarget();
+    this.$highlightVUS.cancelCurrentScheduledUpdate();
+    this.$popupVUS.cancelCurrentScheduledUpdate();
+    this.$view.toggle(false);
+    this.$view.popup.unset();
+    this.$view.highlight.unset();
+    this.$view.target.unset();
   }
 }
 

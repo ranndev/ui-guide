@@ -1,9 +1,9 @@
 import IHighlightOptions from '../models/highlight-options';
-import Config from '../services/config';
+import Settings from '../services/settings';
 import defer, { IDeferredPromise } from './defer';
 
 export default function queryWaitElement(
-  config: Config['data'],
+  config: Settings['data'],
   options: IHighlightOptions,
 ): IDeferredPromise<HTMLElement> {
   const deferred: IDeferredPromise<HTMLElement> = defer();

@@ -1,6 +1,6 @@
 import IEvents from '../models/events';
 import IHighlightOptions from '../models/highlight-options';
-import updateHighlight from '../utils/default-highlight-update-fn';
+import { updateHighlight, updatePopup } from '../utils/default-updaters';
 
 export type ConfigHighlightOptions = Required<
   Omit<IHighlightOptions, 'target' | 'context' | 'events'>
@@ -10,15 +10,17 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
-export default class Config {
+export default class Settings {
   public data: {
-    events: Partial<Omit<IEvents, 'onHighlightUpdate'>> &
-      Pick<IEvents, 'onHighlightUpdate'>;
+    events: Partial<Omit<IEvents, 'onHighlightUpdate' | 'onPopupUpdate'>> &
+      Pick<IEvents, 'onHighlightUpdate' | 'onPopupUpdate'>;
     highlightOptions: ConfigHighlightOptions;
   } = {
     events: {
-      onElementsReady: undefined,
+      onHighlightReady: undefined,
       onHighlightUpdate: updateHighlight,
+      onPopupReady: undefined,
+      onPopupUpdate: updatePopup,
       onTargetFound: undefined,
     },
     highlightOptions: {
@@ -27,11 +29,12 @@ export default class Config {
       highlightUpdateDelay: 0,
       popper: true,
       popperRef: 'highlight-target',
+      popupUpdateDelay: 0,
       wait: true,
     },
   };
 
-  public update(config: DeepPartial<Config['data']>) {
+  public update(config: DeepPartial<Settings['data']>) {
     this.extend(this.data, config);
   }
 
