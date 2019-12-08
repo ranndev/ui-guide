@@ -10,23 +10,29 @@ describe('highlight - Events', () => {
   });
 
   it('should invoke the event listeners', () => {
-    const defaultOnElementsReady = cy.stub();
+    const defaultOnHighlightReady = cy.stub();
+    const defaultOnPopupReady = cy.stub();
     const defaultOnTargetFound = cy.stub();
-    const onElementsReady = cy.stub();
+    const onHighlightReady = cy.stub();
+    const onPopupReady = cy.stub();
     const onHighlightUpdate = cy.stub();
+    const onPopupUpdate = cy.stub();
     const onTargetFound = cy.stub();
 
     uiguide.configure({
       events: {
-        onElementsReady: defaultOnElementsReady,
+        onHighlightReady: defaultOnHighlightReady,
+        onPopupReady: defaultOnPopupReady,
         onTargetFound: defaultOnTargetFound,
       },
     });
 
     uiguide.highlight({
       events: {
-        onElementsReady,
+        onHighlightReady,
         onHighlightUpdate,
+        onPopupReady,
+        onPopupUpdate,
         onTargetFound,
       },
       target: '[data-testid="target-1"]',
@@ -44,23 +50,34 @@ describe('highlight - Events', () => {
         }),
       )
       .then(() => {
-        expect(onElementsReady).to.be.called;
+        expect(onHighlightReady).to.be.called;
+        expect(defaultOnPopupReady).to.be.called;
         expect(onHighlightUpdate).to.be.called;
+        expect(onPopupReady).to.be.called;
+        expect(defaultOnPopupReady).to.be.called;
+        expect(onPopupUpdate).to.be.called;
         expect(onTargetFound).to.be.called;
-        expect(defaultOnElementsReady).to.be.called;
         expect(defaultOnTargetFound).to.be.called;
 
-        expect(onTargetFound).to.be.calledBefore(onElementsReady);
+        expect(onTargetFound).to.be.calledBefore(onHighlightReady);
+
         expect(defaultOnTargetFound).to.be.calledImmediatelyAfter(
           onTargetFound,
         );
 
-        expect(onElementsReady).to.be.calledAfter(defaultOnTargetFound);
-        expect(defaultOnElementsReady).to.be.calledImmediatelyAfter(
-          onElementsReady,
+        expect(onHighlightReady).to.be.calledAfter(defaultOnTargetFound);
+
+        expect(defaultOnHighlightReady).to.be.calledImmediatelyAfter(
+          onHighlightReady,
         );
 
-        expect(onHighlightUpdate).to.be.calledAfter(defaultOnElementsReady);
+        expect(onHighlightUpdate).to.be.calledAfter(defaultOnHighlightReady);
+
+        expect(onPopupReady).to.be.calledAfter(defaultOnTargetFound);
+
+        expect(defaultOnPopupReady).to.be.calledImmediatelyAfter(onPopupReady);
+
+        expect(onPopupUpdate).to.be.calledAfter(defaultOnPopupReady);
       });
   });
 });

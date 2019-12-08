@@ -12,10 +12,8 @@ describe('highlight - Popup', () => {
   it('should resolve the highlighted element and unhighlight function', () => {
     uiguide.highlight({
       events: {
-        onElementsReady: (elements) => {
-          if (!elements.popup) return;
-
-          elements.popup.innerHTML = `
+        onPopupReady: ({ element }) => {
+          element.innerHTML = `
             <div uig-popup-wrapper>
               <span x-arrow></span>
               <div uig-popup-card>Click Me!</div>
