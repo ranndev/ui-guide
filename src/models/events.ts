@@ -7,8 +7,8 @@ export default interface IEvents {
   onTargetFound: (target: HTMLElement) => void;
 
   /**
-   * This will fire when the highlight elements ([uig-highlight-backdrop] and
-   * [uig-highlight-box]) are created and appended to the dom.
+   * This will fire when the highlight's elements ([uig-highlight-backdrop] and
+   * [uig-highlight-box]) are created and appended to the DOM.
    */
   onHighlightReady: (highlight: {
     backdrop: HTMLElement;
@@ -42,7 +42,7 @@ export default interface IEvents {
    * By default, this is just calling `popper.update()` internally.
    *
    * **Important:** *Listening on this event will bring you the full*
-   * *responsibility of updating the highlight & popup elements.*
+   * *responsibility of updating the popup elements.*
    */
   onPopupUpdate: (data: { element: HTMLElement; popper: Popper }) => void;
 }
