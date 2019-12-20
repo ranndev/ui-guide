@@ -57,7 +57,7 @@
     "html-webpack-plugin": "^3.2.0",
     "husky": "^3.1.0",
     "istanbul-lib-coverage": "^2.0.5",
-    "mini-css-extract-plugin": "^0.8.0",
+    "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.13.0",
     "nyc": "^14.1.1",
     "popper.js": "^1.16.0",
